@@ -6,7 +6,21 @@
         xmlns:local="clr-namespace:NotSoTotalCommanderApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525"
-        DataContext="{Binding Source={StaticResource Locator} Path=Main}">
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="6*" />
+            <RowDefinition Height="6*" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" Grid.ColumnSpan="2">
+            <MenuItem Header="Test">
+                <MenuItem Header="Test" />
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
