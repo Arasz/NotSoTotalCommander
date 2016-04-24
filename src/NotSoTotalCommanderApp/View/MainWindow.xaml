@@ -5,9 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:NotSoTotalCommanderApp.Converters"
         xmlns:local="clr-namespace:NotSoTotalCommanderApp"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <Window.Resources>
         <conv:ExtensionConverter x:Key="ExtensionConverter" />
@@ -48,7 +55,14 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <ComboBox HorizontalAlignment="Stretch" Margin="0,0,5,0"
-                          ItemsSource="{Binding DrivesList}" SelectedIndex="0" />
+                          ItemsSource="{Binding SystemDrives}" SelectedIndex="0"
+                          SelectedItem="{Binding SelectedPath, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
                 <TextBlock HorizontalAlignment="Stretch" Margin="5,0,0,0" />
             </StackPanel>
             <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1">
@@ -75,7 +89,7 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <ComboBox HorizontalAlignment="Stretch" Margin="0,0,5,0"
-                          ItemsSource="{Binding DrivesList}" SelectedIndex="0" />
+                          ItemsSource="{Binding SystemDrives}" SelectedIndex="0" />
                 <TextBlock HorizontalAlignment="Stretch" Margin="5,0,0,0" />
             </StackPanel>
             <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1">

@@ -1,10 +1,11 @@
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using NotSoTotalCommanderApp.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
+using System.Windows.Input;
 
 namespace NotSoTotalCommanderApp.ViewModel
 {
@@ -16,11 +17,14 @@ namespace NotSoTotalCommanderApp.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly FileSystemExplorerModel _explorerModel;
-
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
-        public IEnumerable<string> DrivesList { get; private set; }
-
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
+
+        public ICommand LoadFileSystemItemsCommand { get; private set; }
+
+        public string SelectedPath { get; set; }
+
+        public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class. 
@@ -28,22 +32,24 @@ namespace NotSoTotalCommanderApp.ViewModel
         public MainViewModel(FileSystemExplorerModel explorerModel)
         {
             _explorerModel = explorerModel;
+            SelectedPath = SystemDrives.First();
 
-            if (IsInDesignMode)
+            LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
+        }
+
+        /// <summary>
+        /// Loads file system items informations 
+        /// </summary>
+        private void LoadFileSystemItems()
+        {
+            var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+
+            _leftFieFileSystemInfos.Clear();
+
+            foreach (var extendedFileSystemInfo in items)
             {
+                _leftFieFileSystemInfos.Add(extendedFileSystemInfo);
             }
-
-            DrivesList = Directory.GetLogicalDrives();
-
-            var beginingPath = DrivesList.First();
-            var directories = Directory.GetDirectories(beginingPath);
-            var files = Directory.GetFiles(beginingPath);
-
-            foreach (var dirInfo in directories.Select(dir => new ExtendedFileSystemInfo(new DirectoryInfo(dir))).ToList())
-                _leftFieFileSystemInfos.Add(dirInfo);
-
-            foreach (var file in files.Select(file => new ExtendedFileSystemInfo(new FileInfo(file))).ToList())
-                _leftFieFileSystemInfos.Add(file);
         }
     }
 }
