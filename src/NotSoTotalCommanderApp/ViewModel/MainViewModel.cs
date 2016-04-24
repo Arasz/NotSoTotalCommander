@@ -15,6 +15,8 @@ namespace NotSoTotalCommanderApp.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private readonly FileSystemExplorerModel _explorerModel;
+
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
         public IEnumerable<string> DrivesList { get; private set; }
 
@@ -23,8 +25,10 @@ namespace NotSoTotalCommanderApp.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class. 
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(FileSystemExplorerModel explorerModel)
         {
+            _explorerModel = explorerModel;
+
             if (IsInDesignMode)
             {
             }

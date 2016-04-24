@@ -79,6 +79,7 @@
     <Compile Include="Converters\FileSystemTypeConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Model\ExtendedFileSystemInfo.cs" />
+    <Compile Include="Model\FileSystemExplorerModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="View\MainWindow.xaml">
