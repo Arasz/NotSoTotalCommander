@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 
 namespace NotSoTotalCommanderApp.ViewModel
 {
@@ -28,6 +29,16 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
 
             DrivesList = Directory.GetLogicalDrives();
+
+            var beginingPath = DrivesList.First();
+            var directories = Directory.GetDirectories(beginingPath);
+            var files = Directory.GetFiles(beginingPath);
+
+            foreach (var dirInfo in directories.Select(dir => new DirectoryInfo(dir)).ToList())
+                _leftFieFileSystemInfos.Add(dirInfo);
+
+            foreach (var file in files.Select(file => new FileInfo(file)).ToList())
+                _leftFieFileSystemInfos.Add(file);
         }
     }
 }
