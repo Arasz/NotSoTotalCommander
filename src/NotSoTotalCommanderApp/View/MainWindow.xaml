@@ -26,7 +26,7 @@
             </MenuItem>
         </Menu>
 
-        <ToolBarTray Grid.Row="1" Grid.ColumnSpan="3">
+        <ToolBarTray Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <ToolBar>
                 <Button Content="Test1" Margin="10,0" />
                 <Button Content="Test2" Margin="10,0" />
@@ -45,7 +45,7 @@
             </ListView>
         </StackPanel>
 
-        <StatusBar Grid.Row="3" Grid.ColumnSpan="3">
+        <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
             <StatusBarItem>
                 <TextBox Text="Test" />
             </StatusBarItem>
