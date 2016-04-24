@@ -3,10 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:NotSoTotalCommanderApp.Converters"
         xmlns:local="clr-namespace:NotSoTotalCommanderApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+
+    <Window.Resources>
+        <conv:ExtensionConverter x:Key="ExtensionConverter" />
+        <conv:SizeConverter x:Key="SizeConverter" />
+        <conv:FileSystemTypeConverter x:Key="FileSystemTypeConverter" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -47,7 +55,12 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension,
+                            Converter={StaticResource ExtensionConverter}}" />
+                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size,
+                            Converter={StaticResource SizeConverter}}" />
                         <GridViewColumn Header="Creation time" DisplayMemberBinding="{Binding CreationTime}" />
+                        <GridViewColumn Header="Attribute" DisplayMemberBinding="{Binding Attributes}" />
                     </GridView>
                 </ListView.View>
             </ListView>

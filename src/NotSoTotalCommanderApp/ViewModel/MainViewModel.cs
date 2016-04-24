@@ -1,4 +1,5 @@
 using GalaSoft.MvvmLight;
+using NotSoTotalCommanderApp.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -14,7 +15,7 @@ namespace NotSoTotalCommanderApp.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private ObservableCollection<FileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<FileSystemInfo>();
+        private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
         public IEnumerable<string> DrivesList { get; private set; }
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
@@ -34,10 +35,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             var directories = Directory.GetDirectories(beginingPath);
             var files = Directory.GetFiles(beginingPath);
 
-            foreach (var dirInfo in directories.Select(dir => new DirectoryInfo(dir)).ToList())
+            foreach (var dirInfo in directories.Select(dir => new ExtendedFileSystemInfo(new DirectoryInfo(dir))).ToList())
                 _leftFieFileSystemInfos.Add(dirInfo);
 
-            foreach (var file in files.Select(file => new FileInfo(file)).ToList())
+            foreach (var file in files.Select(file => new ExtendedFileSystemInfo(new FileInfo(file))).ToList())
                 _leftFieFileSystemInfos.Add(file);
         }
     }
