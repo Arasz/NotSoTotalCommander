@@ -13,14 +13,22 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="6*" />
-            <RowDefinition Height="6*" />
         </Grid.RowDefinitions>
+
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Test">
                 <MenuItem Header="Test" />
             </MenuItem>
         </Menu>
+
+        <ToolBarTray Grid.Row="1" Grid.ColumnSpan="2">
+            <ToolBar>
+                <Button Content="Test1" Margin="10,0" />
+                <Button Content="Test2" Margin="10,0" />
+            </ToolBar>
+        </ToolBarTray>
     </Grid>
 </Window>
