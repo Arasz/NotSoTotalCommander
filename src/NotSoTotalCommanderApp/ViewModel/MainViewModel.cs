@@ -1,4 +1,5 @@
 using GalaSoft.MvvmLight;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
@@ -13,6 +14,7 @@ namespace NotSoTotalCommanderApp.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private ObservableCollection<FileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<FileSystemInfo>();
+        public IEnumerable<string> DrivesList { get; private set; }
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
 
@@ -24,6 +26,8 @@ namespace NotSoTotalCommanderApp.ViewModel
             if (IsInDesignMode)
             {
             }
+
+            DrivesList = Directory.GetLogicalDrives();
         }
     }
 }
