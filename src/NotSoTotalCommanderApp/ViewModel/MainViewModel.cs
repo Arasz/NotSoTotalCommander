@@ -61,6 +61,12 @@ namespace NotSoTotalCommanderApp.ViewModel
 
                 var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
 
+                if (items == null && SystemDrives.Contains(SelectedPath))
+                {
+                    _leftFieFileSystemInfos.Clear();
+                    return;
+                }
+
                 if (items == null)
                     return;
 
