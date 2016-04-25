@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NotSoTotalCommanderApp.ViewModel
@@ -19,7 +21,6 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
-        private string _selectedPath;
 
         public ICommand KeyPressedCommand { get; private set; }
 
@@ -27,13 +28,20 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public ICommand LoadFileSystemItemsCommand { get; private set; }
 
-        public string SelectedDrive { get; set; }
-
         public string SelectedPath
         {
-            get { return _selectedPath; }
-            set { Set(ref _selectedPath, value, nameof(SelectedPath)); }
+            get { return _explorerModel.CurrentDirectory; }
+            set
+            {
+                if (value == null) return;
+                _explorerModel.CurrentDirectory = value;
+                RaisePropertyChanged(nameof(SelectedPath));
+            }
         }
+
+        public IList<string> SelectedPaths { get; } = new List<string>();
+
+        public ICommand SelectionChangedCommand { get; private set; }
 
         public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
 
@@ -44,10 +52,26 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
-            SelectedDrive = SelectedPath;
 
             LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
             KeyPressedCommand = new RelayCommand<EventArgs>(ResponseForPressingKey);
+            SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
+        }
+
+        private void HandleSelectionEvent(EventArgs eventArgs)
+        {
+            var selectionChanged = (SelectionChangedEventArgs)eventArgs;
+
+            selectionChanged.Handled = true;
+
+            var addedItems = selectionChanged.AddedItems;
+            var removedItems = selectionChanged.RemovedItems;
+
+            foreach (var addedItem in addedItems)
+                SelectedPaths.Add(((ExtendedFileSystemInfo)addedItem).ToString());
+
+            foreach (var removedItem in removedItems)
+                SelectedPaths.Remove(((ExtendedFileSystemInfo)removedItem).ToString());
         }
 
         /// <summary>
@@ -57,14 +81,22 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             try
             {
-                var tmpSelectedPath = _selectedPath;
+                var tmpSelectedPath = SelectedPath;
 
                 var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+
+                if (items == null && SystemDrives.Contains(SelectedPath))
+                {
+                    _leftFieFileSystemInfos.Clear();
+                    return;
+                }
 
                 if (items == null)
                     return;
 
                 _leftFieFileSystemInfos.Clear();
+                var getBackElement = new ExtendedFileSystemInfo(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory));
+                _leftFieFileSystemInfos.Add(getBackElement);
 
                 foreach (var extendedFileSystemInfo in items)
                 {

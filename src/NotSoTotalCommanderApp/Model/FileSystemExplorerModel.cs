@@ -11,6 +11,18 @@ namespace NotSoTotalCommanderApp.Model
     {
         private Dictionary<string, IEnumerable<ExtendedFileSystemInfo>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<ExtendedFileSystemInfo>>();
 
+        public string CurrentDirectory { get; set; }
+
+        public string GetCurrentDirectoryParent
+        {
+            get
+            {
+                var root = Directory.GetParent(CurrentDirectory)?.ToString();
+
+                return string.IsNullOrEmpty(root) ? null : root;
+            }
+        }
+
         public string[] SystemDrives => Directory.GetLogicalDrives();
 
         public FileSystemExplorerModel()
