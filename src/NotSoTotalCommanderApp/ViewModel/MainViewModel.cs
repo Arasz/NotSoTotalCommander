@@ -1,10 +1,12 @@
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using NotSoTotalCommanderApp.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
+using System.Windows.Input;
 
 namespace NotSoTotalCommanderApp.ViewModel
 {
@@ -15,31 +17,77 @@ namespace NotSoTotalCommanderApp.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private readonly FileSystemExplorerModel _explorerModel;
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
-        public IEnumerable<string> DrivesList { get; private set; }
+        private string _selectedPath;
+
+        public ICommand KeyPressedCommand { get; private set; }
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
+
+        public ICommand LoadFileSystemItemsCommand { get; private set; }
+
+        public string SelectedDrive { get; set; }
+
+        public string SelectedPath
+        {
+            get { return _selectedPath; }
+            set { Set(ref _selectedPath, value, nameof(SelectedPath)); }
+        }
+
+        public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class. 
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(FileSystemExplorerModel explorerModel)
         {
-            if (IsInDesignMode)
+            _explorerModel = explorerModel;
+            SelectedPath = SystemDrives.First();
+            SelectedDrive = SelectedPath;
+
+            LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
+            KeyPressedCommand = new RelayCommand<EventArgs>(ResponseForPressingKey);
+        }
+
+        /// <summary>
+        /// Loads file system items informations 
+        /// </summary>
+        private void LoadFileSystemItems()
+        {
+            try
+            {
+                var tmpSelectedPath = _selectedPath;
+
+                var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+
+                if (items == null)
+                    return;
+
+                _leftFieFileSystemInfos.Clear();
+
+                foreach (var extendedFileSystemInfo in items)
+                {
+                    _leftFieFileSystemInfos.Add(extendedFileSystemInfo);
+                }
+
+                SelectedPath = tmpSelectedPath;
+            }
+            catch (UnauthorizedAccessException exception)
             {
             }
+        }
 
-            DrivesList = Directory.GetLogicalDrives();
+        private void ResponseForPressingKey(EventArgs eventArgs)
+        {
+            var keyPressed = eventArgs as KeyEventArgs;
 
-            var beginingPath = DrivesList.First();
-            var directories = Directory.GetDirectories(beginingPath);
-            var files = Directory.GetFiles(beginingPath);
-
-            foreach (var dirInfo in directories.Select(dir => new ExtendedFileSystemInfo(new DirectoryInfo(dir))).ToList())
-                _leftFieFileSystemInfos.Add(dirInfo);
-
-            foreach (var file in files.Select(file => new ExtendedFileSystemInfo(new FileInfo(file))).ToList())
-                _leftFieFileSystemInfos.Add(file);
+            switch (keyPressed.Key)
+            {
+                case Key.Enter:
+                    LoadFileSystemItems();
+                    break;
+            }
         }
     }
 }
