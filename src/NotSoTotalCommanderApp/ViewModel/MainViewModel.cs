@@ -18,6 +18,7 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
+
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
 
         public ICommand LoadFileSystemItemsCommand { get; private set; }

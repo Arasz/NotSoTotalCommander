@@ -19,7 +19,7 @@
     <Window.Resources>
         <conv:ExtensionConverter x:Key="ExtensionConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
-        <conv:FileSystemTypeConverter x:Key="FileSystemTypeConverter" />
+        <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
     </Window.Resources>
 
     <Grid>
@@ -63,9 +63,10 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </ComboBox>
-                <TextBlock HorizontalAlignment="Stretch" Margin="5,0,0,0" />
+                <TextBlock x:Name="pathTextBlock" HorizontalAlignment="Stretch" Margin="5,0,0,0" />
             </StackPanel>
-            <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1">
+            <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1" SelectedItem="{Binding
+                ElementName=pathTextBlock, Path=Text, Converter={StaticResource ToPathConverter}, Mode=OneWayToSource}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />

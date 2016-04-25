@@ -76,7 +76,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\ExtensionConverter.cs" />
-    <Compile Include="Converters\FileSystemTypeConverter.cs" />
+    <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Model\ExtendedFileSystemInfo.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />

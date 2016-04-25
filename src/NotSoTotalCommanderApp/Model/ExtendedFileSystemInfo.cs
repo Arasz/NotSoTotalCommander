@@ -1,46 +1,71 @@
 ﻿using System;
 using System.IO;
+using System.Security;
 
 namespace NotSoTotalCommanderApp.Model
 {
     /// <summary>
     /// </summary>
-    public class ExtendedFileSystemInfo : FileSystemInfo
+    public class ExtendedFileSystemInfo
     {
         /// <summary>
         /// Decorated object 
         /// </summary>
         private readonly FileSystemInfo _fileSystemInfo;
 
-        public new FileAttributes Attributes
+        public FileAttributes Attributes
         {
             get { return _fileSystemInfo.Attributes; }
             set { _fileSystemInfo.Attributes = value; }
         }
 
-        public new DateTime CreationTime
+        public DateTime CreationTime
         {
             get { return _fileSystemInfo.CreationTime; }
             set { _fileSystemInfo.CreationTime = value; }
         }
 
-        public override bool Exists => _fileSystemInfo.Exists;
+        public DateTime CreationTimeUtc
+        {
+            get { return _fileSystemInfo.CreationTimeUtc; }
+            set { _fileSystemInfo.CreationTimeUtc = value; }
+        }
 
-        public new string Extension
+        public bool Exists => _fileSystemInfo.Exists;
+
+        public string Extension
         {
             get { return _fileSystemInfo.Extension; }
             set { throw new NotImplementedException(); }
         }
 
-        public override string FullName => _fileSystemInfo.Name;
+        public string FullName => _fileSystemInfo.Name;
 
-        public new DateTime LastAccessTime
+        public DateTime LastAccessTime
         {
             get { return _fileSystemInfo.LastAccessTime; }
             set { _fileSystemInfo.LastAccessTime = value; }
         }
 
-        public override string Name => _fileSystemInfo.Name;
+        public DateTime LastAccessTimeUtc
+        {
+            get { return _fileSystemInfo.LastAccessTimeUtc; }
+            set { _fileSystemInfo.LastAccessTimeUtc = value; }
+        }
+
+        public DateTime LastWriteTime
+        {
+            get { return _fileSystemInfo.LastWriteTime; }
+            set { _fileSystemInfo.LastWriteTime = value; }
+        }
+
+        public DateTime LastWriteTimeUtc
+        {
+            get { return _fileSystemInfo.LastWriteTimeUtc; }
+            set { _fileSystemInfo.LastWriteTimeUtc = value; }
+        }
+
+        public string Name => _fileSystemInfo.Name;
 
         public long? Size { get; }
 
@@ -53,6 +78,27 @@ namespace NotSoTotalCommanderApp.Model
             Size = concreateInfo?.Length;
         }
 
-        public override void Delete() => _fileSystemInfo.Delete();
+        public void Delete() => _fileSystemInfo.Delete();
+
+        public override bool Equals(object obj)
+        {
+            return _fileSystemInfo.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _fileSystemInfo.GetHashCode();
+        }
+
+        /// <summary>
+        /// Refreshes the state of the object. 
+        /// </summary>
+        [SecuritySafeCritical]
+        public void Refresh() => _fileSystemInfo.Refresh();
+
+        public override string ToString()
+        {
+            return _fileSystemInfo.ToString();
+        }
     }
 }
