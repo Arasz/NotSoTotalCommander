@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using NotSoTotalCommanderApp.Model.FIleSystemDecorator;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace NotSoTotalCommanderApp.Model
     /// </summary>
     public class FileSystemExplorerModel
     {
-        private Dictionary<string, IEnumerable<ExtendedFileSystemInfo>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<ExtendedFileSystemInfo>>();
+        private Dictionary<string, IEnumerable<FileSystemElement>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<FileSystemElement>>();
 
         public string CurrentDirectory { get; set; }
 
@@ -35,7 +36,7 @@ namespace NotSoTotalCommanderApp.Model
         /// <param name="path"> Path from which files system items will be retrived </param>
         /// <exception cref="IOException"> Can't read files or directories for given path </exception>
         /// <returns> Collection of informations about file system items (files, dictionaries) </returns>
-        public IEnumerable<ExtendedFileSystemInfo> GetAllItemsUnderPath(string path)
+        public IEnumerable<FileSystemElement> GetAllItemsUnderPath(string path)
         {
             if (!Directory.Exists(path))
                 return null;
@@ -46,8 +47,8 @@ namespace NotSoTotalCommanderApp.Model
             if (directories == null || files == null)
                 throw new IOException("Can't read files or directories for given path");
 
-            var dirInfos = directories.Select(dict => new ExtendedFileSystemInfo(new DirectoryInfo(dict)));
-            var filesInfos = files.Select(file => new ExtendedFileSystemInfo(new FileInfo(file)));
+            var dirInfos = directories.Select(dict => new FileSystemElement(new DirectoryInfo(dict)));
+            var filesInfos = files.Select(file => new FileSystemElement(new FileInfo(file)));
 
             return dirInfos.Concat(filesInfos);
         }

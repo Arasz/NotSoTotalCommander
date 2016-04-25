@@ -1,11 +1,11 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using NotSoTotalCommanderApp.Model;
+using NotSoTotalCommanderApp.Model.FIleSystemDecorator;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,7 +20,7 @@ namespace NotSoTotalCommanderApp.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly FileSystemExplorerModel _explorerModel;
-        private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
+        private ObservableCollection<FileSystemElement> _leftFieFileSystemInfos = new ObservableCollection<FileSystemElement>();
 
         public ICommand KeyPressedCommand { get; private set; }
 
@@ -68,10 +68,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             var removedItems = selectionChanged.RemovedItems;
 
             foreach (var addedItem in addedItems)
-                SelectedPaths.Add(((ExtendedFileSystemInfo)addedItem).ToString());
+                SelectedPaths.Add(((FileSystemElement)addedItem).ToString());
 
             foreach (var removedItem in removedItems)
-                SelectedPaths.Remove(((ExtendedFileSystemInfo)removedItem).ToString());
+                SelectedPaths.Remove(((FileSystemElement)removedItem).ToString());
         }
 
         /// <summary>
@@ -95,8 +95,6 @@ namespace NotSoTotalCommanderApp.ViewModel
                     return;
 
                 _leftFieFileSystemInfos.Clear();
-                var getBackElement = new ExtendedFileSystemInfo(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory));
-                _leftFieFileSystemInfos.Add(getBackElement);
 
                 foreach (var extendedFileSystemInfo in items)
                 {
