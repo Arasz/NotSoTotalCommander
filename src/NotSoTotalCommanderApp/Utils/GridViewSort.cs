@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NotSoTotalCommanderApp.Utils
+﻿namespace NotSoTotalCommanderApp.Utils
 {
-    class GridViewSort
+    /// <summary>
+    /// </summary>
+    /// <seealso cref="http://www.thomaslevesque.com/2009/03/27/wpf-automatically-sort-a-gridview-when-a-column-header-is-clicked/"/>
+    public class GridViewSort
     {
     }
 }
