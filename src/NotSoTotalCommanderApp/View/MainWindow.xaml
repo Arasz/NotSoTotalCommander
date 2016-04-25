@@ -4,15 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:NotSoTotalCommanderApp.Converters"
-        xmlns:local="clr-namespace:NotSoTotalCommanderApp"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:command="http://www.galasoft.ch/mvvmlight"
         mc:Ignorable="d"
         Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Window.Resources>
         <conv:ExtensionConverter x:Key="ExtensionConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
-        <conv:FileSystemTypeConverter x:Key="FileSystemTypeConverter" />
+        <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
     </Window.Resources>
 
     <Grid>
@@ -48,10 +55,28 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <ComboBox HorizontalAlignment="Stretch" Margin="0,0,5,0"
-                          ItemsSource="{Binding DrivesList}" SelectedIndex="0" />
-                <TextBlock HorizontalAlignment="Stretch" Margin="5,0,0,0" />
+                          ItemsSource="{Binding SystemDrives}" SelectedIndex="0"
+                          SelectedItem="{Binding SelectedPath, Mode=OneWayToSource}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <command:EventToCommand Command="{Binding LoadFileSystemItemsCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ComboBox>
+                <TextBlock x:Name="pathTextBlock" HorizontalAlignment="Stretch" Margin="5,0,0,0"
+                           Text="{Binding SelectedPath, Mode=OneWay}" />
             </StackPanel>
-            <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1">
+            <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1"
+                      SelectedItem="{Binding SelectedPath, Converter={StaticResource ToPathConverter}}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="KeyDown">
+                        <command:EventToCommand Command="{Binding KeyPressedCommand}"
+                                                 PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="MouseDown">
+                        <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
@@ -75,7 +100,7 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <ComboBox HorizontalAlignment="Stretch" Margin="0,0,5,0"
-                          ItemsSource="{Binding DrivesList}" SelectedIndex="0" />
+                          ItemsSource="{Binding SystemDrives}" SelectedIndex="0" />
                 <TextBlock HorizontalAlignment="Stretch" Margin="5,0,0,0" />
             </StackPanel>
             <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1">
