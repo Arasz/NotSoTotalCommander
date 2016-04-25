@@ -2,85 +2,85 @@
 using System.IO;
 using System.Security;
 
-namespace NotSoTotalCommanderApp.Model
+namespace NotSoTotalCommanderApp.Model.FIleSystemDecorator
 {
     /// <summary>
     /// </summary>
-    public class ExtendedFileSystemInfo
+    public class FileSystemElement
     {
         /// <summary>
         /// Decorated object 
         /// </summary>
-        private readonly FileSystemInfo _fileSystemInfo;
+        protected readonly FileSystemInfo _fileSystemInfo;
 
-        public FileAttributes Attributes
+        public virtual FileAttributes Attributes
         {
             get { return _fileSystemInfo.Attributes; }
             set { _fileSystemInfo.Attributes = value; }
         }
 
-        public DateTime CreationTime
+        public virtual DateTime CreationTime
         {
             get { return _fileSystemInfo.CreationTime; }
             set { _fileSystemInfo.CreationTime = value; }
         }
 
-        public DateTime CreationTimeUtc
+        public virtual DateTime CreationTimeUtc
         {
             get { return _fileSystemInfo.CreationTimeUtc; }
             set { _fileSystemInfo.CreationTimeUtc = value; }
         }
 
-        public bool Exists => _fileSystemInfo.Exists;
+        public virtual bool Exists => _fileSystemInfo.Exists;
 
-        public string Extension
+        public virtual string Extension
         {
             get { return _fileSystemInfo.Extension; }
             set { throw new NotImplementedException(); }
         }
 
-        public string FullName => _fileSystemInfo.Name;
+        public virtual string FullName => _fileSystemInfo.Name;
 
-        public DateTime LastAccessTime
+        public virtual DateTime LastAccessTime
         {
             get { return _fileSystemInfo.LastAccessTime; }
             set { _fileSystemInfo.LastAccessTime = value; }
         }
 
-        public DateTime LastAccessTimeUtc
+        public virtual DateTime LastAccessTimeUtc
         {
             get { return _fileSystemInfo.LastAccessTimeUtc; }
             set { _fileSystemInfo.LastAccessTimeUtc = value; }
         }
 
-        public DateTime LastWriteTime
+        public virtual DateTime LastWriteTime
         {
             get { return _fileSystemInfo.LastWriteTime; }
             set { _fileSystemInfo.LastWriteTime = value; }
         }
 
-        public DateTime LastWriteTimeUtc
+        public virtual DateTime LastWriteTimeUtc
         {
             get { return _fileSystemInfo.LastWriteTimeUtc; }
             set { _fileSystemInfo.LastWriteTimeUtc = value; }
         }
 
-        public string Name => _fileSystemInfo.Name;
+        public virtual string Name => _fileSystemInfo.Name;
 
         /// <summary>
         /// Returns -1 when fileSystemInfo is directory otherwise returns file length or null when
         /// file have no length
         /// </summary>
-        public long? Size { get; }
+        public virtual long? Size { get; }
 
-        public ExtendedFileSystemInfo(FileSystemInfo fileSystemInfo)
+        public FileSystemElement(FileSystemInfo fileSystemInfo)
         {
             _fileSystemInfo = fileSystemInfo;
 
             Size = (_fileSystemInfo as FileInfo)?.Length;
         }
 
-        public void Delete() => _fileSystemInfo.Delete();
+        public virtual void Delete() => _fileSystemInfo.Delete();
 
         public override bool Equals(object obj)
         {

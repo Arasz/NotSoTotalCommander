@@ -5,9 +5,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace NotSoTotalCommanderApp.Utils
+namespace NotSoTotalCommanderApp.Utility
 {
     /// <summary>
+    /// Enables sorting by column in <see cref="ListView"/> control with <see cref="GridView"/> view 
     /// </summary>
     /// <seealso cref="http://www.thomaslevesque.com/2009/03/27/wpf-automatically-sort-a-gridview-when-a-column-header-is-clicked/"/>
     public class GridViewSort
