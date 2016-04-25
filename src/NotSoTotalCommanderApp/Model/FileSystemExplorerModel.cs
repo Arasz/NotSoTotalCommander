@@ -25,6 +25,9 @@ namespace NotSoTotalCommanderApp.Model
         /// <returns> Collection of informations about file system items (files, dictionaries) </returns>
         public IEnumerable<ExtendedFileSystemInfo> GetAllItemsUnderPath(string path)
         {
+            if (!Directory.Exists(path))
+                return null;
+
             var directories = Directory.GetDirectories(path);
             var files = Directory.GetFiles(path);
 
