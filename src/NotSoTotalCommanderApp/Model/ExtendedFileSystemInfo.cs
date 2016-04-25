@@ -67,15 +67,17 @@ namespace NotSoTotalCommanderApp.Model
 
         public string Name => _fileSystemInfo.Name;
 
+        /// <summary>
+        /// Returns -1 when fileSystemInfo is directory otherwise returns file length or null when
+        /// file have no length
+        /// </summary>
         public long? Size { get; }
 
         public ExtendedFileSystemInfo(FileSystemInfo fileSystemInfo)
         {
             _fileSystemInfo = fileSystemInfo;
 
-            var concreateInfo = _fileSystemInfo as FileInfo;
-
-            Size = concreateInfo?.Length;
+            Size = (_fileSystemInfo as FileInfo)?.Length;
         }
 
         public void Delete() => _fileSystemInfo.Delete();
