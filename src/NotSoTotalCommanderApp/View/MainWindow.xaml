@@ -68,7 +68,12 @@
             </StackPanel>
             <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1"
                       SelectedItem="{Binding SelectedPath, Converter={StaticResource ToPathConverter}}">
+
                 <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding SelectionChangedCommand}"
+                                                PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
                     <i:EventTrigger EventName="KeyDown">
                         <command:EventToCommand Command="{Binding KeyPressedCommand}"
                                                  PassEventArgsToCommand="True" />
@@ -77,6 +82,7 @@
                         <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
