@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,7 +21,6 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
         private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
-        private string _selectedPath;
 
         public ICommand KeyPressedCommand { get; private set; }
 
@@ -28,12 +28,15 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public ICommand LoadFileSystemItemsCommand { get; private set; }
 
-        public string SelectedDrive { get; set; }
-
         public string SelectedPath
         {
-            get { return _selectedPath; }
-            set { Set(ref _selectedPath, value, nameof(SelectedPath)); }
+            get { return _explorerModel.CurrentDirectory; }
+            set
+            {
+                if (value == null) return;
+                _explorerModel.CurrentDirectory = value;
+                RaisePropertyChanged(nameof(SelectedPath));
+            }
         }
 
         public IList<string> SelectedPaths { get; } = new List<string>();
@@ -49,7 +52,6 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
-            SelectedDrive = SelectedPath;
 
             LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
             KeyPressedCommand = new RelayCommand<EventArgs>(ResponseForPressingKey);
@@ -79,7 +81,7 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             try
             {
-                var tmpSelectedPath = _selectedPath;
+                var tmpSelectedPath = SelectedPath;
 
                 var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
 
@@ -93,6 +95,8 @@ namespace NotSoTotalCommanderApp.ViewModel
                     return;
 
                 _leftFieFileSystemInfos.Clear();
+                var getBackElement = new ExtendedFileSystemInfo(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory));
+                _leftFieFileSystemInfos.Add(getBackElement);
 
                 foreach (var extendedFileSystemInfo in items)
                 {
