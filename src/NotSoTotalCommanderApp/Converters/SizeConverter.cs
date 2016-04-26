@@ -11,7 +11,7 @@ namespace NotSoTotalCommanderApp.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return "<DIR>";
+            if ((long)value == -1) return "<DIR>";
 
             return value;
         }

@@ -89,8 +89,7 @@
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"
                                         utils:GridViewSort.PropertyName="Name" />
-                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension,
-                                        Converter={StaticResource ExtensionConverter}}"
+                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension}"
                                         utils:GridViewSort.PropertyName="Extension" />
                         <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size,
                                         Converter={StaticResource SizeConverter}}"

@@ -78,9 +78,9 @@
     <Compile Include="Converters\ExtensionConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
-    <Compile Include="Model\FIleSystemDecorator\FileSystemElement.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
+    <Compile Include="Model\FileSystemItem.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="View\MainWindow.xaml">

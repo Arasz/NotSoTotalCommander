@@ -1,4 +1,4 @@
-﻿using NotSoTotalCommanderApp.Model.FIleSystemDecorator;
+﻿using NotSoTotalCommanderApp.Model;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -14,7 +14,7 @@ namespace NotSoTotalCommanderApp.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var fileSystemInfo = value as FileSystemElement;
+            var fileSystemInfo = value as FileSystemItem;
 
             return fileSystemInfo?.ToString();
         }

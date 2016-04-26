@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using NotSoTotalCommanderApp.Model;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -110,7 +111,7 @@ namespace NotSoTotalCommanderApp.Utility
             ListSortDirection direction = ListSortDirection.Ascending;
             if (view.SortDescriptions.Count > 0)
             {
-                SortDescription currentSort = view.SortDescriptions[0];
+                SortDescription currentSort = view.SortDescriptions[1];
                 if (currentSort.PropertyName == propertyName)
                 {
                     if (currentSort.Direction == ListSortDirection.Ascending)
@@ -128,6 +129,7 @@ namespace NotSoTotalCommanderApp.Utility
             }
             if (!string.IsNullOrEmpty(propertyName))
             {
+                view.SortDescriptions.Add(new SortDescription(nameof(FileSystemItem.TraversalDirection), ListSortDirection.Descending));
                 view.SortDescriptions.Add(new SortDescription(propertyName, direction));
                 if (GetShowSortGlyph(listView))
                     AddSortGlyph(
