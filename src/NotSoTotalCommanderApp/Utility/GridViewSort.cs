@@ -149,8 +149,7 @@ namespace NotSoTotalCommanderApp.Utility
             }
             if (parent != null)
                 return (T)parent;
-            else
-                return null;
+            return null;
         }
 
         public static bool GetAutoSort(DependencyObject obj)

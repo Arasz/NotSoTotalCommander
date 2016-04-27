@@ -18,7 +18,7 @@
     </i:Interaction.Triggers>
 
     <Window.Resources>
-        <conv:ExtensionConverter x:Key="ExtensionConverter" />
+        <conv:EventArgsToActionTypeConverter x:Key="EventArgsToActionTypeConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
     </Window.Resources>
@@ -77,11 +77,14 @@
                                                 PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                     <i:EventTrigger EventName="KeyDown">
-                        <command:EventToCommand Command="{Binding KeyPressedCommand}"
-                                                 PassEventArgsToCommand="True" />
+                        <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
                     </i:EventTrigger>
-                    <i:EventTrigger EventName="MouseDown">
-                        <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                            EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}"
+                                                PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
