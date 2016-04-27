@@ -1,10 +1,12 @@
-﻿namespace NotSoTotalCommanderApp.ViewModel
+﻿namespace NotSoTotalCommanderApp.Enums
 {
     public enum ActionType
     {
         None,
         OpenFileSystemItem,
         Copy,
-        Paste
+        Paste,
+        Delete,
+        Create
     }
 }

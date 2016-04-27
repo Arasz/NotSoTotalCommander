@@ -83,7 +83,7 @@
     <Compile Include="Model\IFileSystemItem.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
     <Compile Include="Model\FileSystemItem.cs" />
-    <Compile Include="ViewModel\ActionType.cs" />
+    <Compile Include="Enums\ActionType.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="View\MainWindow.xaml">
@@ -129,6 +129,25 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assests\Default 2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assests\copy.png" />
+    <Resource Include="Assests\paste.png" />
+    <Resource Include="Assests\delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assests\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assests\clipboard-paste-option.png" />
+    <Resource Include="Assests\file-red.png" />
+    <Resource Include="Assests\file.png" />
+    <Resource Include="Assests\folder-red.png" />
+    <Resource Include="Assests\new-file.png" />
+    <Resource Include="Assests\scissors.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assests\remove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,6 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using NotSoTotalCommanderApp.Enums;
 using NotSoTotalCommanderApp.Model;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
 
+        private bool _itemsReloaded;
+
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
@@ -28,6 +31,8 @@ namespace NotSoTotalCommanderApp.ViewModel
         public ICommand LoadFileSystemItemsCommand { get; private set; }
 
         public ICommand RespondForUserActionCommand { get; private set; }
+
+        public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
         public string SelectedPath
         {
@@ -39,8 +44,6 @@ namespace NotSoTotalCommanderApp.ViewModel
                 RaisePropertyChanged(nameof(SelectedPath));
             }
         }
-
-        public IList<IFileSystemItem> SelectedPaths { get; } = new List<IFileSystemItem>();
 
         public ICommand SelectionChangedCommand { get; private set; }
 
@@ -65,14 +68,20 @@ namespace NotSoTotalCommanderApp.ViewModel
 
             selectionChanged.Handled = true;
 
+            if (_itemsReloaded)
+            {
+                SelectedItems.Clear();
+                _itemsReloaded = false;
+            }
+
             var addedItems = selectionChanged.AddedItems;
             var removedItems = selectionChanged.RemovedItems;
 
             foreach (var addedItem in addedItems)
-                SelectedPaths.Add(((IFileSystemItem)addedItem));
+                SelectedItems.Add(((IFileSystemItem)addedItem));
 
             foreach (var removedItem in removedItems)
-                SelectedPaths.Remove(((IFileSystemItem)removedItem));
+                SelectedItems.Remove(((IFileSystemItem)removedItem));
         }
 
         /// <summary>
@@ -104,6 +113,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                 }
 
                 SelectedPath = tmpSelectedPath;
+                _itemsReloaded = true;
             }
             catch (UnauthorizedAccessException exception)
             {
@@ -119,11 +129,20 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.Copy:
-                    _explorerModel.Copy(SelectedPaths);
+                    _explorerModel.Copy(SelectedItems);
                     break;
 
                 case ActionType.Paste:
                     _explorerModel.Past();
+                    LoadFileSystemItems();
+                    break;
+
+                case ActionType.Delete:
+                    _explorerModel.Delete(SelectedItems);
+                    LoadFileSystemItems();
+                    break;
+
+                case ActionType.Create:
                     break;
             }
         }
