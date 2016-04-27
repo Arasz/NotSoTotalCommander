@@ -40,7 +40,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
         }
 
-        public IList<string> SelectedPaths { get; } = new List<string>();
+        public IList<IFileSystemItem> SelectedPaths { get; } = new List<IFileSystemItem>();
 
         public ICommand SelectionChangedCommand { get; private set; }
 
@@ -69,10 +69,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             var removedItems = selectionChanged.RemovedItems;
 
             foreach (var addedItem in addedItems)
-                SelectedPaths.Add(((IFileSystemItem)addedItem).ToString());
+                SelectedPaths.Add(((IFileSystemItem)addedItem));
 
             foreach (var removedItem in removedItems)
-                SelectedPaths.Remove(((IFileSystemItem)removedItem).ToString());
+                SelectedPaths.Remove(((IFileSystemItem)removedItem));
         }
 
         /// <summary>
@@ -116,6 +116,14 @@ namespace NotSoTotalCommanderApp.ViewModel
             {
                 case ActionType.OpenFileSystemItem:
                     LoadFileSystemItems();
+                    break;
+
+                case ActionType.Copy:
+                    _explorerModel.Copy(SelectedPaths);
+                    break;
+
+                case ActionType.Paste:
+                    _explorerModel.Past();
                     break;
             }
         }
