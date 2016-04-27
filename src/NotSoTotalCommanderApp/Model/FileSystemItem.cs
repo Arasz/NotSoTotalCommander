@@ -6,7 +6,7 @@ namespace NotSoTotalCommanderApp.Model
     /// <summary>
     /// FIle system info view model 
     /// </summary>
-    public class FileSystemItem
+    public class FileSystemItem : IFileSystemItem
     {
         /// <summary>
         /// Decorated object 
@@ -21,7 +21,9 @@ namespace NotSoTotalCommanderApp.Model
 
         public string Extension => _fileSystemInfo.Extension.TrimStart('.');
 
-        public string FullName => _fileSystemInfo.Name;
+        public string FullName => _fileSystemInfo.FullName;
+
+        public bool IsDirectory { get; }
 
         public DateTime LastAccessTime => _fileSystemInfo.LastAccessTime;
 
@@ -29,21 +31,17 @@ namespace NotSoTotalCommanderApp.Model
 
         public string Name => _fileSystemInfo.Name;
 
-        /// <summary>
-        /// Returns -1 when fileSystemInfo is directory otherwise returns file length or null when
-        /// file have no length
-        /// </summary>
+        public string Path => ToString();
+
         public long Size => (_fileSystemInfo as FileInfo)?.Length ?? -1;
 
-        /// <summary>
-        /// File system tree traversal direction 
-        /// </summary>
         public TraversalDirection TraversalDirection { get; set; }
 
         public FileSystemItem(FileSystemInfo fileSystemInfo, TraversalDirection traversalDirection = TraversalDirection.Down)
         {
             TraversalDirection = traversalDirection;
             _fileSystemInfo = fileSystemInfo;
+            IsDirectory = _fileSystemInfo is DirectoryInfo;
         }
 
         public override bool Equals(object obj)
