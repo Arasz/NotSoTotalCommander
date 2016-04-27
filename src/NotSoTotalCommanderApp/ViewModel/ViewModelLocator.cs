@@ -13,6 +13,7 @@
 */
 
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Practices.ServiceLocation;
 using NotSoTotalCommanderApp.Model;
 
@@ -49,7 +50,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             ////    // Create run time view services and models
             ////    SimpleIoc.Default.Register<IDataService, DataService>();
             ////}
-
+            SimpleIoc.Default.Register<IMessenger>(() => Messenger.Default);
             SimpleIoc.Default.Register<FileSystemExplorerModel>();
             SimpleIoc.Default.Register<MainViewModel>();
         }

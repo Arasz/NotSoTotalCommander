@@ -75,11 +75,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\ExtensionConverter.cs" />
+    <Compile Include="Converters\EventArgsToActionTypeConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
-    <Compile Include="Model\ExtendedFileSystemInfo.cs" />
+    <Compile Include="Messages\FileSystemItemsOperationMessage.cs" />
+    <Compile Include="Messages\Tokens.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
+    <Compile Include="Model\FileSystemBackItemProxy.cs" />
+    <Compile Include="Model\IFileSystemItem.cs" />
+    <Compile Include="Utility\GridViewSort.cs" />
+    <Compile Include="Model\FileSystemItem.cs" />
+    <Compile Include="ViewModel\ActionType.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="View\MainWindow.xaml">
@@ -123,7 +129,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assests\Default 2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

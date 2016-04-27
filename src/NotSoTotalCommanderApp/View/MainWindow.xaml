@@ -6,6 +6,7 @@
         xmlns:conv="clr-namespace:NotSoTotalCommanderApp.Converters"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight"
+        xmlns:utils="clr-namespace:NotSoTotalCommanderApp.Utility"
         mc:Ignorable="d"
         Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
@@ -17,7 +18,7 @@
     </i:Interaction.Triggers>
 
     <Window.Resources>
-        <conv:ExtensionConverter x:Key="ExtensionConverter" />
+        <conv:EventArgsToActionTypeConverter x:Key="EventArgsToActionTypeConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
     </Window.Resources>
@@ -67,25 +68,39 @@
                            Text="{Binding SelectedPath, Mode=OneWay}" />
             </StackPanel>
             <ListView ItemsSource="{Binding LeftItemsCollection}" Grid.Row="1"
-                      SelectedItem="{Binding SelectedPath, Converter={StaticResource ToPathConverter}}">
+                      SelectedItem="{Binding SelectedPath, Converter={StaticResource ToPathConverter}}"
+                      utils:GridViewSort.AutoSort="True">
+
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="KeyDown">
-                        <command:EventToCommand Command="{Binding KeyPressedCommand}"
-                                                 PassEventArgsToCommand="True" />
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding SelectionChangedCommand}"
+                                                PassEventArgsToCommand="True" />
                     </i:EventTrigger>
-                    <i:EventTrigger EventName="MouseDown">
-                        <i:InvokeCommandAction Command="{Binding LoadFileSystemItemsCommand}" />
+                    <i:EventTrigger EventName="KeyDown">
+                        <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                            EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}"
+                                                PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension,
-                            Converter={StaticResource ExtensionConverter}}" />
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"
+                                        utils:GridViewSort.PropertyName="Name" />
+                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension}"
+                                        utils:GridViewSort.PropertyName="Extension" />
                         <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size,
-                            Converter={StaticResource SizeConverter}}" />
-                        <GridViewColumn Header="Creation time" DisplayMemberBinding="{Binding CreationTime}" />
-                        <GridViewColumn Header="Attribute" DisplayMemberBinding="{Binding Attributes}" />
+                                        Converter={StaticResource SizeConverter}}"
+                                        utils:GridViewSort.PropertyName="Size" />
+                        <GridViewColumn Header="Creation time" DisplayMemberBinding="{Binding CreationTime}"
+                                        utils:GridViewSort.PropertyName="CreationTime" />
+                        <GridViewColumn Header="Attribute" DisplayMemberBinding="{Binding Attributes}"
+                                        utils:GridViewSort.PropertyName="Attributes" />
                     </GridView>
                 </ListView.View>
             </ListView>

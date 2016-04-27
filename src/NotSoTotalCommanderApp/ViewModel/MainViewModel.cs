@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NotSoTotalCommanderApp.ViewModel
@@ -18,22 +20,29 @@ namespace NotSoTotalCommanderApp.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly FileSystemExplorerModel _explorerModel;
-        private ObservableCollection<ExtendedFileSystemInfo> _leftFieFileSystemInfos = new ObservableCollection<ExtendedFileSystemInfo>();
-        private string _selectedPath;
 
-        public ICommand KeyPressedCommand { get; private set; }
+        private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
 
         public ICommand LoadFileSystemItemsCommand { get; private set; }
 
-        public string SelectedDrive { get; set; }
+        public ICommand RespondForUserActionCommand { get; private set; }
 
         public string SelectedPath
         {
-            get { return _selectedPath; }
-            set { Set(ref _selectedPath, value, nameof(SelectedPath)); }
+            get { return _explorerModel.CurrentDirectory; }
+            set
+            {
+                if (value == null) return;
+                _explorerModel.CurrentDirectory = value;
+                RaisePropertyChanged(nameof(SelectedPath));
+            }
         }
+
+        public IList<string> SelectedPaths { get; } = new List<string>();
+
+        public ICommand SelectionChangedCommand { get; private set; }
 
         public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
 
@@ -44,10 +53,26 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
-            SelectedDrive = SelectedPath;
 
             LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
-            KeyPressedCommand = new RelayCommand<EventArgs>(ResponseForPressingKey);
+            RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
+            SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
+        }
+
+        private void HandleSelectionEvent(EventArgs eventArgs)
+        {
+            var selectionChanged = (SelectionChangedEventArgs)eventArgs;
+
+            selectionChanged.Handled = true;
+
+            var addedItems = selectionChanged.AddedItems;
+            var removedItems = selectionChanged.RemovedItems;
+
+            foreach (var addedItem in addedItems)
+                SelectedPaths.Add(((IFileSystemItem)addedItem).ToString());
+
+            foreach (var removedItem in removedItems)
+                SelectedPaths.Remove(((IFileSystemItem)removedItem).ToString());
         }
 
         /// <summary>
@@ -57,14 +82,21 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             try
             {
-                var tmpSelectedPath = _selectedPath;
+                var tmpSelectedPath = SelectedPath;
 
                 var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+
+                if (items == null && SystemDrives.Contains(SelectedPath))
+                {
+                    _leftFieFileSystemInfos.Clear();
+                    return;
+                }
 
                 if (items == null)
                     return;
 
                 _leftFieFileSystemInfos.Clear();
+                _leftFieFileSystemInfos.Add(new FileSystemBackItemProxy(new FileSystemItem(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory), TraversalDirection.Up)));
 
                 foreach (var extendedFileSystemInfo in items)
                 {
@@ -78,13 +110,11 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
         }
 
-        private void ResponseForPressingKey(EventArgs eventArgs)
+        private void ResponseForUserAction(ActionType action)
         {
-            var keyPressed = eventArgs as KeyEventArgs;
-
-            switch (keyPressed.Key)
+            switch (action)
             {
-                case Key.Enter:
+                case ActionType.OpenFileSystemItem:
                     LoadFileSystemItems();
                     break;
             }
