@@ -21,13 +21,13 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
 
-        private ObservableCollection<FileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<FileSystemItem>();
-
-        public ICommand KeyPressedCommand { get; private set; }
+        private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
 
         public ICommand LoadFileSystemItemsCommand { get; private set; }
+
+        public ICommand RespondForUserActionCommand { get; private set; }
 
         public string SelectedPath
         {
@@ -55,7 +55,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             SelectedPath = SystemDrives.First();
 
             LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
-            KeyPressedCommand = new RelayCommand<EventArgs>(ResponseForPressingKey);
+            RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
         }
 
@@ -69,10 +69,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             var removedItems = selectionChanged.RemovedItems;
 
             foreach (var addedItem in addedItems)
-                SelectedPaths.Add(((FileSystemItem)addedItem).ToString());
+                SelectedPaths.Add(((IFileSystemItem)addedItem).ToString());
 
             foreach (var removedItem in removedItems)
-                SelectedPaths.Remove(((FileSystemItem)removedItem).ToString());
+                SelectedPaths.Remove(((IFileSystemItem)removedItem).ToString());
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     return;
 
                 _leftFieFileSystemInfos.Clear();
-                _leftFieFileSystemInfos.Add(new FileSystemItem(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory), TraversalDirection.Up));
+                _leftFieFileSystemInfos.Add(new FileSystemBackItemProxy(new FileSystemItem(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory), TraversalDirection.Up)));
 
                 foreach (var extendedFileSystemInfo in items)
                 {
@@ -110,13 +110,11 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
         }
 
-        private void ResponseForPressingKey(EventArgs eventArgs)
+        private void ResponseForUserAction(ActionType action)
         {
-            var keyPressed = eventArgs as KeyEventArgs;
-
-            switch (keyPressed.Key)
+            switch (action)
             {
-                case Key.Enter:
+                case ActionType.OpenFileSystemItem:
                     LoadFileSystemItems();
                     break;
             }

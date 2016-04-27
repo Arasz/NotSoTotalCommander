@@ -14,7 +14,7 @@ namespace NotSoTotalCommanderApp.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var fileSystemInfo = value as FileSystemItem;
+            var fileSystemInfo = value as IFileSystemItem;
 
             return fileSystemInfo?.ToString();
         }
