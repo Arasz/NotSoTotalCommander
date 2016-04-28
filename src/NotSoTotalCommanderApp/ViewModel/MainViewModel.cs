@@ -1,6 +1,8 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using NotSoTotalCommanderApp.Enums;
+using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -22,8 +25,10 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
 
-        private bool _itemsReloaded;
+        private readonly IMessenger _messanger;
 
+        private bool _itemsReloaded;
+        private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
@@ -54,6 +59,9 @@ namespace NotSoTotalCommanderApp.ViewModel
         /// </summary>
         public MainViewModel(FileSystemExplorerModel explorerModel)
         {
+            _messanger = Messenger.Default;
+            _messanger.Register<UserDecisionResultMessage>(this, RetrieveUserResponse);
+
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
 
@@ -134,7 +142,13 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.Paste:
-                    _explorerModel.Past();
+                    UserDecisionRequest(DecisionType.DepthCopy);
+                    var decisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    if (decisionResult == MessageBoxResult.Yes)
+                        _explorerModel.Past(inDepth: true);
+                    else if (decisionResult == MessageBoxResult.No)
+                        _explorerModel.Past();
+
                     LoadFileSystemItems();
                     break;
 
@@ -149,5 +163,10 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
             }
         }
+
+        private void RetrieveUserResponse(UserDecisionResultMessage userDecisionResult) => _lastDecisionResultMessage = userDecisionResult;
+
+        private void UserDecisionRequest(DecisionType decisionType)
+                    => _messanger.Send(new UserDecisionRequestMessage(decisionType));
     }
 }

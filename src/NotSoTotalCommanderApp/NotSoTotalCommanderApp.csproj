@@ -78,6 +78,8 @@
     <Compile Include="Converters\EventArgsToActionTypeConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
+    <Compile Include="Messages\UserDecisionRequestMessage.cs" />
+    <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
     <Compile Include="Model\FileSystemBackItemProxy.cs" />
     <Compile Include="Model\IFileSystemItem.cs" />

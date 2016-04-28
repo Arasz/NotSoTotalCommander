@@ -5,9 +5,6 @@ using System.Linq;
 
 namespace NotSoTotalCommanderApp.Model
 {
-    /// <summary>
-    /// Responsible for operations on file system 
-    /// </summary>
     public class FileSystemExplorerModel
     {
         private Dictionary<string, IEnumerable<FileSystemItem>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<FileSystemItem>>();
@@ -90,17 +87,27 @@ namespace NotSoTotalCommanderApp.Model
         /// </summary>
         /// <param name="fileSystemItemsToPast"></param>
         /// <returns></returns>
-        public void Past(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false)
+        public void Past(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
             var itemsToPast = fileSystemItemsToPast ?? ItemsClipboard;
+            var currentDirectoryTmp = CurrentDirectory;
 
             foreach (var fileSystemItem in itemsToPast)
             {
                 if (fileSystemItem.IsDirectory)
+                {
                     Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, fileSystemItem.Name));
+                    if (inDepth)
+                    {
+                        CurrentDirectory = ConstructNewPath(CurrentDirectory, fileSystemItem.Name);
+                        Past(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
+                    }
+                }
                 else
                     File.Copy(fileSystemItem.Path, ConstructNewPath(CurrentDirectory, fileSystemItem.Name), canOverwrite);
             }
+
+            CurrentDirectory = currentDirectoryTmp;
         }
 
         /// <summary>
