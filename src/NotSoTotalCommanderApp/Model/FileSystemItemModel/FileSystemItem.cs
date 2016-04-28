@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace NotSoTotalCommanderApp.Model
+namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 {
     /// <summary>
     /// FIle system info view model 
