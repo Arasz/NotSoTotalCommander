@@ -16,6 +16,11 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
         string FullName { get; }
 
         /// <summary>
+        /// Type of file system item icon 
+        /// </summary>
+        IconType IconType { get; }
+
+        /// <summary>
         /// True if <see cref="IFileSystemItem"/> is directory, false if file 
         /// </summary>
         bool IsDirectory { get; }
@@ -43,6 +48,6 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
         /// <summary>
         /// File system tree traversal direction 
         /// </summary>
-        TraversalDirection TraversalDirection { get; set; }
+        TraversalDirection TraversalDirection { get; }
     }
 }

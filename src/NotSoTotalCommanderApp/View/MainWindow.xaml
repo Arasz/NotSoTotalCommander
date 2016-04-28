@@ -23,6 +23,7 @@
         <conv:EventArgsToActionTypeConverter x:Key="EventArgsToActionTypeConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
+        <conv:IconTypeToPathConverter x:Key="IconTypeToPathConverter" />
     </Window.Resources>
 
     <Grid>
@@ -153,7 +154,8 @@
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Image Source="../Assests/folder.png" Stretch="Fill"  MaxHeight="16" MaxWidth="16" />
+                                    <Image Source="{Binding IconType, Converter={StaticResource IconTypeToPathConverter}}"
+                                           Stretch="Fill"  MaxHeight="16" MaxWidth="16" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

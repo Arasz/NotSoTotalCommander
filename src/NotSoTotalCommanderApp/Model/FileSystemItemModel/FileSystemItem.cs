@@ -23,6 +23,8 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 
         public string FullName => _fileSystemInfo.FullName;
 
+        public IconType IconType { get; }
+
         public bool IsDirectory { get; }
 
         public DateTime LastAccessTime => _fileSystemInfo.LastAccessTime;
@@ -35,13 +37,28 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 
         public long Size => (_fileSystemInfo as FileInfo)?.Length ?? -1;
 
-        public TraversalDirection TraversalDirection { get; set; }
+        public TraversalDirection TraversalDirection { get; }
 
         public FileSystemItem(FileSystemInfo fileSystemInfo, TraversalDirection traversalDirection = TraversalDirection.Down)
         {
             TraversalDirection = traversalDirection;
             _fileSystemInfo = fileSystemInfo;
             IsDirectory = _fileSystemInfo is DirectoryInfo;
+
+            if (IsDirectory)
+            {
+                if ((Attributes & FileAttributes.System) != 0)
+                    IconType = IconType.RestricedDirectory;
+                else
+                    IconType = IconType.Directory;
+            }
+            else
+            {
+                if ((Attributes & FileAttributes.System) != 0)
+                    IconType = IconType.RestrictedFile;
+                else
+                    IconType = IconType.File;
+            }
         }
 
         public override bool Equals(object obj) => _fileSystemInfo.Equals(obj);
@@ -56,7 +73,7 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
     /// </summary>
     public enum TraversalDirection
     {
-        Down,
-        Up,
+        Down = 0,
+        Up = 1,
     }
 }

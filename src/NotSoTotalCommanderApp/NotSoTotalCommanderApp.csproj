@@ -77,11 +77,13 @@
     </ApplicationDefinition>
     <Compile Include="Converters\EventArgsToActionTypeConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
+    <Compile Include="Converters\IconTypeToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
     <Compile Include="Model\FileSystemItemModel\FileSystemBackItemProxy.cs" />
+    <Compile Include="Model\FileSystemItemModel\IconType.cs" />
     <Compile Include="Model\FileSystemItemModel\IFileSystemItem.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
     <Compile Include="Model\FileSystemItemModel\FileSystemItem.cs" />
@@ -157,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assests\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assests\up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

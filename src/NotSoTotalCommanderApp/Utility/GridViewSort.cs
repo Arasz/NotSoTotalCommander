@@ -129,7 +129,7 @@ namespace NotSoTotalCommanderApp.Utility
             }
             if (!string.IsNullOrEmpty(propertyName))
             {
-                view.SortDescriptions.Add(new SortDescription(nameof(FileSystemItem.TraversalDirection), ListSortDirection.Descending));
+                view.SortDescriptions.Add(new SortDescription(nameof(IFileSystemItem.TraversalDirection), ListSortDirection.Descending));
                 view.SortDescriptions.Add(new SortDescription(propertyName, direction));
                 if (GetShowSortGlyph(listView))
                     AddSortGlyph(

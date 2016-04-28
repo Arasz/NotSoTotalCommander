@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using NotSoTotalCommanderApp.Model.FileSystemItemModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
