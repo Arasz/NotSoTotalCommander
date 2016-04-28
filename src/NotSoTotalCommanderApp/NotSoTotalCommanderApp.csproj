@@ -79,6 +79,7 @@
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\IconTypeToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
+    <Compile Include="Culture\CultureResources.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <Resource Include="Assests\up.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

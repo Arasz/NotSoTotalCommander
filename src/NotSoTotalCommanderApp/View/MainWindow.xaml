@@ -40,15 +40,16 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0" Grid.ColumnSpan="3">
-            <MenuItem Header="Test">
-                <MenuItem Header="Test" />
+            <MenuItem Header="Language">
+                <MenuItem Header="Polish" />
+                <MenuItem Header="English" />
             </MenuItem>
         </Menu>
 
         <ToolBarTray Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <ToolBar>
-                <Button Content="Test1" Margin="10,0" />
-                <Button Content="Test2" Margin="10,0" />
+                <Button Content="" Margin="10,0" />
+                <Button Content="" Margin="10,0" />
             </ToolBar>
         </ToolBarTray>
 

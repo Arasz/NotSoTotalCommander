@@ -147,9 +147,9 @@ namespace NotSoTotalCommanderApp.ViewModel
                     var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
-                        _explorerModel.Past(inDepth: true);
+                        _explorerModel.Paste(inDepth: true);
                     else if (pastDecisionResult == MessageBoxResult.No)
-                        _explorerModel.Past();
+                        _explorerModel.Paste();
 
                     LoadFileSystemItems();
                     break;

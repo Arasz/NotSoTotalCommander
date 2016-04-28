@@ -88,7 +88,7 @@ namespace NotSoTotalCommanderApp.Model
         /// </summary>
         /// <param name="fileSystemItemsToPast"></param>
         /// <returns></returns>
-        public void Past(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
             var itemsToPast = fileSystemItemsToPast ?? ItemsClipboard;
             var currentDirectoryTmp = CurrentDirectory;
@@ -101,7 +101,7 @@ namespace NotSoTotalCommanderApp.Model
                     if (inDepth)
                     {
                         CurrentDirectory = ConstructNewPath(CurrentDirectory, fileSystemItem.Name);
-                        Past(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
+                        Paste(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
                     }
                 }
                 else
