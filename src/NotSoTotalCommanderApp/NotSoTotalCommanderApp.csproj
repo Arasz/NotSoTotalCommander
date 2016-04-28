@@ -81,13 +81,17 @@
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
-    <Compile Include="Model\FileSystemBackItemProxy.cs" />
-    <Compile Include="Model\IFileSystemItem.cs" />
+    <Compile Include="Model\FileSystemItemModel\FileSystemBackItemProxy.cs" />
+    <Compile Include="Model\FileSystemItemModel\IFileSystemItem.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
-    <Compile Include="Model\FileSystemItem.cs" />
+    <Compile Include="Model\FileSystemItemModel\FileSystemItem.cs" />
     <Compile Include="Enums\ActionType.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Page Include="View\DirectoryNameInputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -95,6 +99,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\DirectoryNameInputWindow.xaml.cs">
+      <DependentUpon>DirectoryNameInputWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

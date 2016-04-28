@@ -14,8 +14,9 @@ namespace NotSoTotalCommanderApp.Messages
 
     internal enum DecisionType
     {
-        DepthCopy,
+        DepthPaste,
         Override,
         Delete,
+        Create,
     }
 }

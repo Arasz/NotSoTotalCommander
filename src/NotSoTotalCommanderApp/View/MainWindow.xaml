@@ -9,8 +9,9 @@
         xmlns:utils="clr-namespace:NotSoTotalCommanderApp.Utility"
         xmlns:enum="clr-namespace:NotSoTotalCommanderApp.Enums"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
-        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+        Title="NotSoTotalCommander" Height="400" Width="800" x:Name="mainWindow"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
+        Icon="../Assests/Default 2.png">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">

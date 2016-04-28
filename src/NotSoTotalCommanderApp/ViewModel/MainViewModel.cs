@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Messaging;
 using NotSoTotalCommanderApp.Enums;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
+using NotSoTotalCommanderApp.Model.FileSystemItemModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -142,23 +143,32 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.Paste:
-                    UserDecisionRequest(DecisionType.DepthCopy);
-                    var decisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
-                    if (decisionResult == MessageBoxResult.Yes)
+                    UserDecisionRequest(DecisionType.DepthPaste);
+                    var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+
+                    if (pastDecisionResult == MessageBoxResult.Yes)
                         _explorerModel.Past(inDepth: true);
-                    else if (decisionResult == MessageBoxResult.No)
+                    else if (pastDecisionResult == MessageBoxResult.No)
                         _explorerModel.Past();
 
                     LoadFileSystemItems();
                     break;
 
                 case ActionType.Delete:
-                    _explorerModel.Delete(SelectedItems);
-                    LoadFileSystemItems(true);
+                    UserDecisionRequest(DecisionType.Delete);
+                    var deleteDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    if (deleteDecisionResult == MessageBoxResult.Yes)
+                    {
+                        _explorerModel.Delete(SelectedItems);
+                        LoadFileSystemItems(true);
+                    }
                     break;
 
                 case ActionType.Create:
-                    _explorerModel.CreateDirectory("WOLOLOLO");
+                    UserDecisionRequest(DecisionType.Create);
+                    var cresteResponse = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    var newName = _lastDecisionResultMessage.Name;
+                    _explorerModel.CreateDirectory(newName);
                     LoadFileSystemItems();
                     break;
             }
