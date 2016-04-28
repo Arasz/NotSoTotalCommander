@@ -32,7 +32,7 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public ICommand RespondForUserActionCommand { get; private set; }
 
-        public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
+        public List<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
         public string SelectedPath
         {
@@ -57,7 +57,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
 
-            LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
+            LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
             RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
         }
@@ -74,28 +74,29 @@ namespace NotSoTotalCommanderApp.ViewModel
                 _itemsReloaded = false;
             }
 
-            var addedItems = selectionChanged.AddedItems;
-            var removedItems = selectionChanged.RemovedItems;
+            var addedItems = selectionChanged.AddedItems.Cast<IFileSystemItem>();
+            var removedItems = selectionChanged.RemovedItems.Cast<IFileSystemItem>();
 
             foreach (var addedItem in addedItems)
-                SelectedItems.Add(((IFileSystemItem)addedItem));
+                SelectedItems.Add(addedItem);
 
             foreach (var removedItem in removedItems)
-                SelectedItems.Remove(((IFileSystemItem)removedItem));
+                SelectedItems.RemoveAll(element => element.Path == removedItem.Path);
         }
 
         /// <summary>
         /// Loads file system items informations 
         /// </summary>
-        private void LoadFileSystemItems()
+        private void LoadFileSystemItems(bool forCurrentDirectory = false)
         {
             try
             {
-                var tmpSelectedPath = SelectedPath;
+                var path = forCurrentDirectory ? _explorerModel.GetCurrentDirectoryParent :
+                SelectedPath;
 
-                var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+                var items = _explorerModel.GetAllItemsUnderPath(path);
 
-                if (items == null && SystemDrives.Contains(SelectedPath))
+                if (items == null && SystemDrives.Contains(path))
                 {
                     _leftFieFileSystemInfos.Clear();
                     return;
@@ -112,7 +113,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     _leftFieFileSystemInfos.Add(extendedFileSystemInfo);
                 }
 
-                SelectedPath = tmpSelectedPath;
+                SelectedPath = path;
                 _itemsReloaded = true;
             }
             catch (UnauthorizedAccessException exception)
@@ -139,10 +140,12 @@ namespace NotSoTotalCommanderApp.ViewModel
 
                 case ActionType.Delete:
                     _explorerModel.Delete(SelectedItems);
-                    LoadFileSystemItems();
+                    LoadFileSystemItems(true);
                     break;
 
                 case ActionType.Create:
+                    _explorerModel.CreateDirectory("WOLOLOLO");
+                    LoadFileSystemItems();
                     break;
             }
         }

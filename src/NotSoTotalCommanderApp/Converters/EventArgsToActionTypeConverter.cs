@@ -64,6 +64,10 @@ namespace NotSoTotalCommanderApp.Converters
                     case "Delete":
                         actionType = ActionType.Delete;
                         break;
+
+                    case "Create":
+                        actionType = ActionType.Create;
+                        break;
                 }
             }
 

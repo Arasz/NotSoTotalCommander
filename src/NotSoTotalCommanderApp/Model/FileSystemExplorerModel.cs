@@ -37,17 +37,20 @@ namespace NotSoTotalCommanderApp.Model
 
         public void Copy(IEnumerable<IFileSystemItem> items)
         {
-            ItemsClipboard = items;
+            ItemsClipboard = items.ToList();
         }
 
         /// <summary>
         /// Creates directory inside current directory 
         /// </summary>
-        public void CreateDirectory()
+        public void CreateDirectory(string directoryName)
         {
-            Directory.CreateDirectory(CurrentDirectory);
+            Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, directoryName));
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="items"></param>
         public void Delete(IEnumerable<IFileSystemItem> items)
         {
             foreach (var fileSystemItem in items)

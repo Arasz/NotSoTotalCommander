@@ -129,6 +129,21 @@
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </MenuItem>
+
+                        <Separator />
+
+                        <MenuItem Header="Create" InputGestureText="Ctrl+D">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/folder.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
                     </ContextMenu>
                 </ListView.ContextMenu>
 

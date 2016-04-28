@@ -36,6 +36,10 @@ namespace NotSoTotalCommanderApp.Model
             _fileSystemItem = fileSystemItem;
         }
 
+        public override bool Equals(object obj) => _fileSystemItem.Equals(obj);
+
+        public override int GetHashCode() => _fileSystemItem.GetHashCode();
+
         public override string ToString() => _fileSystemItem.ToString();
     }
 }

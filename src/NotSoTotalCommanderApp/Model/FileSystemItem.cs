@@ -44,20 +44,11 @@ namespace NotSoTotalCommanderApp.Model
             IsDirectory = _fileSystemInfo is DirectoryInfo;
         }
 
-        public override bool Equals(object obj)
-        {
-            return _fileSystemInfo.Equals(obj);
-        }
+        public override bool Equals(object obj) => _fileSystemInfo.Equals(obj);
 
-        public override int GetHashCode()
-        {
-            return _fileSystemInfo.GetHashCode();
-        }
+        public override int GetHashCode() => _fileSystemInfo.GetHashCode();
 
-        public override string ToString()
-        {
-            return _fileSystemInfo.ToString();
-        }
+        public override string ToString() => _fileSystemInfo.ToString();
     }
 
     /// <summary>
