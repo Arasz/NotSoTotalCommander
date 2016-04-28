@@ -7,9 +7,11 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight"
         xmlns:utils="clr-namespace:NotSoTotalCommanderApp.Utility"
+        xmlns:enum="clr-namespace:NotSoTotalCommanderApp.Enums"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="800" x:Name="mainWindow"
-        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+        Title="NotSoTotalCommander" Height="400" Width="800" x:Name="mainWindow"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
+        Icon="../Assests/Default 2.png">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -21,6 +23,7 @@
         <conv:EventArgsToActionTypeConverter x:Key="EventArgsToActionTypeConverter" />
         <conv:SizeConverter x:Key="SizeConverter" />
         <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
+        <conv:IconTypeToPathConverter x:Key="IconTypeToPathConverter" />
     </Window.Resources>
 
     <Grid>
@@ -37,15 +40,16 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0" Grid.ColumnSpan="3">
-            <MenuItem Header="Test">
-                <MenuItem Header="Test" />
+            <MenuItem Header="Language">
+                <MenuItem Header="Polish" />
+                <MenuItem Header="English" />
             </MenuItem>
         </Menu>
 
         <ToolBarTray Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <ToolBar>
-                <Button Content="Test1" Margin="10,0" />
-                <Button Content="Test2" Margin="10,0" />
+                <Button Content="" Margin="10,0" />
+                <Button Content="" Margin="10,0" />
             </ToolBar>
         </ToolBarTray>
 
@@ -88,8 +92,74 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Copy" InputGestureText="Ctrl+C">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/copy.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <MenuItem Header="Paste" InputGestureText="Ctrl+V">
+                            <MenuItem.Icon>
+                                <Image Source="../Assests/clipboard-paste-option.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <MenuItem Header="Delete" InputGestureText="Ctrl+X">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/remove.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <Separator />
+
+                        <MenuItem Header="Create" InputGestureText="Ctrl+D">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/folder.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+
                 <ListView.View>
                     <GridView>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding IconType, Converter={StaticResource IconTypeToPathConverter}}"
+                                           Stretch="Fill"  MaxHeight="16" MaxWidth="16" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"
                                         utils:GridViewSort.PropertyName="Name" />
                         <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension}"

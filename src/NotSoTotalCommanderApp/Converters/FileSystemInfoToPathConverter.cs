@@ -1,4 +1,4 @@
-﻿using NotSoTotalCommanderApp.Model;
+﻿using NotSoTotalCommanderApp.Model.FileSystemItemModel;
 using System;
 using System.Globalization;
 using System.Windows.Data;

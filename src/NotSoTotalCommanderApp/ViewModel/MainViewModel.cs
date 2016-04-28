@@ -1,12 +1,17 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
+using NotSoTotalCommanderApp.Enums;
+using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
+using NotSoTotalCommanderApp.Model.FileSystemItemModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -21,6 +26,10 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
 
+        private readonly IMessenger _messanger;
+
+        private bool _itemsReloaded;
+        private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
@@ -28,6 +37,8 @@ namespace NotSoTotalCommanderApp.ViewModel
         public ICommand LoadFileSystemItemsCommand { get; private set; }
 
         public ICommand RespondForUserActionCommand { get; private set; }
+
+        public List<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
         public string SelectedPath
         {
@@ -40,8 +51,6 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
         }
 
-        public IList<string> SelectedPaths { get; } = new List<string>();
-
         public ICommand SelectionChangedCommand { get; private set; }
 
         public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
@@ -51,10 +60,13 @@ namespace NotSoTotalCommanderApp.ViewModel
         /// </summary>
         public MainViewModel(FileSystemExplorerModel explorerModel)
         {
+            _messanger = Messenger.Default;
+            _messanger.Register<UserDecisionResultMessage>(this, RetrieveUserResponse);
+
             _explorerModel = explorerModel;
             SelectedPath = SystemDrives.First();
 
-            LoadFileSystemItemsCommand = new RelayCommand(LoadFileSystemItems);
+            LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
             RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
         }
@@ -65,28 +77,35 @@ namespace NotSoTotalCommanderApp.ViewModel
 
             selectionChanged.Handled = true;
 
-            var addedItems = selectionChanged.AddedItems;
-            var removedItems = selectionChanged.RemovedItems;
+            if (_itemsReloaded)
+            {
+                SelectedItems.Clear();
+                _itemsReloaded = false;
+            }
+
+            var addedItems = selectionChanged.AddedItems.Cast<IFileSystemItem>();
+            var removedItems = selectionChanged.RemovedItems.Cast<IFileSystemItem>();
 
             foreach (var addedItem in addedItems)
-                SelectedPaths.Add(((IFileSystemItem)addedItem).ToString());
+                SelectedItems.Add(addedItem);
 
             foreach (var removedItem in removedItems)
-                SelectedPaths.Remove(((IFileSystemItem)removedItem).ToString());
+                SelectedItems.RemoveAll(element => element.Path == removedItem.Path);
         }
 
         /// <summary>
         /// Loads file system items informations 
         /// </summary>
-        private void LoadFileSystemItems()
+        private void LoadFileSystemItems(bool forCurrentDirectory = false)
         {
             try
             {
-                var tmpSelectedPath = SelectedPath;
+                var path = forCurrentDirectory ? _explorerModel.GetCurrentDirectoryParent :
+                SelectedPath;
 
-                var items = _explorerModel.GetAllItemsUnderPath(SelectedPath);
+                var items = _explorerModel.GetAllItemsUnderPath(path);
 
-                if (items == null && SystemDrives.Contains(SelectedPath))
+                if (items == null && SystemDrives.Contains(path))
                 {
                     _leftFieFileSystemInfos.Clear();
                     return;
@@ -103,7 +122,8 @@ namespace NotSoTotalCommanderApp.ViewModel
                     _leftFieFileSystemInfos.Add(extendedFileSystemInfo);
                 }
 
-                SelectedPath = tmpSelectedPath;
+                SelectedPath = path;
+                _itemsReloaded = true;
             }
             catch (UnauthorizedAccessException exception)
             {
@@ -117,7 +137,46 @@ namespace NotSoTotalCommanderApp.ViewModel
                 case ActionType.OpenFileSystemItem:
                     LoadFileSystemItems();
                     break;
+
+                case ActionType.Copy:
+                    _explorerModel.Copy(SelectedItems);
+                    break;
+
+                case ActionType.Paste:
+                    UserDecisionRequest(DecisionType.DepthPaste);
+                    var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+
+                    if (pastDecisionResult == MessageBoxResult.Yes)
+                        _explorerModel.Paste(inDepth: true);
+                    else if (pastDecisionResult == MessageBoxResult.No)
+                        _explorerModel.Paste();
+
+                    LoadFileSystemItems();
+                    break;
+
+                case ActionType.Delete:
+                    UserDecisionRequest(DecisionType.Delete);
+                    var deleteDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    if (deleteDecisionResult == MessageBoxResult.Yes)
+                    {
+                        _explorerModel.Delete(SelectedItems);
+                        LoadFileSystemItems(true);
+                    }
+                    break;
+
+                case ActionType.Create:
+                    UserDecisionRequest(DecisionType.Create);
+                    var cresteResponse = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    var newName = _lastDecisionResultMessage.Name;
+                    _explorerModel.CreateDirectory(newName);
+                    LoadFileSystemItems();
+                    break;
             }
         }
+
+        private void RetrieveUserResponse(UserDecisionResultMessage userDecisionResult) => _lastDecisionResultMessage = userDecisionResult;
+
+        private void UserDecisionRequest(DecisionType decisionType)
+                    => _messanger.Send(new UserDecisionRequestMessage(decisionType));
     }
 }

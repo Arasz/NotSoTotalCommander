@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace NotSoTotalCommanderApp.Model
+namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 {
     public interface IFileSystemItem
     {
@@ -14,6 +14,11 @@ namespace NotSoTotalCommanderApp.Model
         string Extension { get; }
 
         string FullName { get; }
+
+        /// <summary>
+        /// Type of file system item icon 
+        /// </summary>
+        IconType IconType { get; }
 
         /// <summary>
         /// True if <see cref="IFileSystemItem"/> is directory, false if file 
@@ -43,6 +48,6 @@ namespace NotSoTotalCommanderApp.Model
         /// <summary>
         /// File system tree traversal direction 
         /// </summary>
-        TraversalDirection TraversalDirection { get; set; }
+        TraversalDirection TraversalDirection { get; }
     }
 }

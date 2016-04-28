@@ -1,20 +1,16 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using NotSoTotalCommanderApp.Model.FileSystemItemModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace NotSoTotalCommanderApp.Model
 {
-    /// <summary>
-    /// Responsible for operations on file system 
-    /// </summary>
     public class FileSystemExplorerModel
     {
         private Dictionary<string, IEnumerable<FileSystemItem>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<FileSystemItem>>();
 
         private IMessenger _messenger;
-
-        public IEnumerable<IFileSystemItem> CopiedItems { get; set; }
 
         public string CurrentDirectory { get; set; }
 
@@ -28,6 +24,8 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        public IEnumerable<IFileSystemItem> ItemsClipboard { get; set; }
+
         public string[] SystemDrives => Directory.GetLogicalDrives();
 
         public FileSystemExplorerModel(IMessenger messenger)
@@ -35,12 +33,31 @@ namespace NotSoTotalCommanderApp.Model
             _messenger = messenger;
         }
 
+        public void Copy(IEnumerable<IFileSystemItem> items)
+        {
+            ItemsClipboard = items.ToList();
+        }
+
         /// <summary>
         /// Creates directory inside current directory 
         /// </summary>
-        public void CreateDirectory()
+        public void CreateDirectory(string directoryName)
         {
-            Directory.CreateDirectory(CurrentDirectory);
+            Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, directoryName));
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="items"></param>
+        public void Delete(IEnumerable<IFileSystemItem> items)
+        {
+            foreach (var fileSystemItem in items)
+            {
+                if (fileSystemItem.IsDirectory)
+                    Directory.Delete(fileSystemItem.Path, true);
+                else
+                    File.Delete(fileSystemItem.Path);
+            }
         }
 
         /// <summary>
@@ -71,15 +88,27 @@ namespace NotSoTotalCommanderApp.Model
         /// </summary>
         /// <param name="fileSystemItemsToPast"></param>
         /// <returns></returns>
-        public void PastFileItemsAsync(IEnumerable<IFileSystemItem> fileSystemItemsToPast, bool canOverwrite = false)
+        public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
-            foreach (var fileSystemItem in fileSystemItemsToPast)
+            var itemsToPast = fileSystemItemsToPast ?? ItemsClipboard;
+            var currentDirectoryTmp = CurrentDirectory;
+
+            foreach (var fileSystemItem in itemsToPast)
             {
                 if (fileSystemItem.IsDirectory)
+                {
                     Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, fileSystemItem.Name));
-
-                File.Copy(fileSystemItem.Path, ConstructNewPath(CurrentDirectory, fileSystemItem.Name), canOverwrite);
+                    if (inDepth)
+                    {
+                        CurrentDirectory = ConstructNewPath(CurrentDirectory, fileSystemItem.Name);
+                        Paste(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
+                    }
+                }
+                else
+                    File.Copy(fileSystemItem.Path, ConstructNewPath(CurrentDirectory, fileSystemItem.Name), canOverwrite);
             }
+
+            CurrentDirectory = currentDirectoryTmp;
         }
 
         /// <summary>

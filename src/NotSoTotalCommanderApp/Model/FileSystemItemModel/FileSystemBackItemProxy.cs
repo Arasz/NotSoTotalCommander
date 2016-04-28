@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 
-namespace NotSoTotalCommanderApp.Model
+namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 {
     internal class FileSystemBackItemProxy : IFileSystemItem
     {
         private readonly IFileSystemItem _fileSystemItem;
-
         public FileAttributes Attributes { get; } = 0;
 
         public DateTime CreationTime { get; } = DateTime.Now;
@@ -16,6 +15,8 @@ namespace NotSoTotalCommanderApp.Model
         public string Extension { get; } = "";
 
         public string FullName { get; } = "";
+
+        public IconType IconType => IconType.Link;
 
         public bool IsDirectory => _fileSystemItem.IsDirectory;
 
@@ -29,12 +30,16 @@ namespace NotSoTotalCommanderApp.Model
 
         public long Size { get; } = -1;
 
-        public TraversalDirection TraversalDirection { get; set; }
+        public TraversalDirection TraversalDirection => TraversalDirection.Up;
 
         public FileSystemBackItemProxy(IFileSystemItem fileSystemItem)
         {
             _fileSystemItem = fileSystemItem;
         }
+
+        public override bool Equals(object obj) => _fileSystemItem.Equals(obj);
+
+        public override int GetHashCode() => _fileSystemItem.GetHashCode() + TraversalDirection.GetHashCode();
 
         public override string ToString() => _fileSystemItem.ToString();
     }

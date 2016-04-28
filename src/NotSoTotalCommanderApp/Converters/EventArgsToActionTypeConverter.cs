@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using NotSoTotalCommanderApp.ViewModel;
+using NotSoTotalCommanderApp.Enums;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NotSoTotalCommanderApp.Converters
@@ -41,6 +43,32 @@ namespace NotSoTotalCommanderApp.Converters
 
                 if (mouseEventsArgs.ChangedButton == MouseButton.Left && mouseEventsArgs.ClickCount >= 1)
                     actionType = ActionType.OpenFileSystemItem;
+            }
+            else if (value is RoutedEventArgs)
+            {
+                var routedEventArgs = (RoutedEventArgs)value;
+                var operation = (string)parameter;
+
+                routedEventArgs.Handled = true;
+
+                switch (((MenuItem)routedEventArgs.Source).Header.ToString())
+                {
+                    case "Copy":
+                        actionType = ActionType.Copy;
+                        break;
+
+                    case "Paste":
+                        actionType = ActionType.Paste;
+                        break;
+
+                    case "Delete":
+                        actionType = ActionType.Delete;
+                        break;
+
+                    case "Create":
+                        actionType = ActionType.Create;
+                        break;
+                }
             }
 
             return actionType;
