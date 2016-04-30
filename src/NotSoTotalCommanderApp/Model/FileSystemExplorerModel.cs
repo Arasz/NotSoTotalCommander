@@ -12,6 +12,8 @@ namespace NotSoTotalCommanderApp.Model
     {
         private ILog _logger = LogManager.GetLogger(typeof(FileSystemExplorerModel));
 
+        private FileSystemWatcher _watcher = new FileSystemWatcher();
+
         public string CurrentDirectory { get; set; }
 
         public string GetCurrentDirectoryParent
@@ -54,7 +56,7 @@ namespace NotSoTotalCommanderApp.Model
             {
                 _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
             }
-            catch (DirectoryNotFoundException exception)
+            catch (Exception exception)
             {
                 _logger.Error($"Given directory name: {directoryName}, is invalid", exception);
                 throw new InvalidPathException(Path.Combine(CurrentDirectory, directoryName), innerException: exception);
@@ -86,16 +88,39 @@ namespace NotSoTotalCommanderApp.Model
             if (!Directory.Exists(path))
                 return null;
 
-            var directories = Directory.GetDirectories(path);
-            var files = Directory.GetFiles(path);
+            string[] directories = null;
+            string[] files = null;
+
+            try
+            {
+                files = Directory.GetFiles(path);
+                directories = Directory.GetDirectories(path);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                _logger.Info("Unauthorized access to directory", exception);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error($"Given path {path}, is invalid", exception);
+                throw new InvalidPathException(path, innerException: exception);
+            }
 
             if (directories == null || files == null)
-                throw new IOException("Can't read files or directories for given path");
+                throw new FileSystemItemsGetException(path, "Can't read files or directories for given path");
 
             var dirInfos = directories.Select(dict => new FileSystemItem(new DirectoryInfo(dict)));
             var filesInfos = files.Select(file => new FileSystemItem(new FileInfo(file)));
 
             return dirInfos.Concat(filesInfos);
+        }
+
+        public void Move(IFileSystemItem itemToMove, string destinationPath)
+        {
+            if (itemToMove.IsDirectory)
+                Directory.Move(itemToMove.Path, destinationPath);
+
+            File.Move(itemToMove.Path, destinationPath);
         }
 
         /// <summary>
