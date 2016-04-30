@@ -1,5 +1,7 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using log4net;
+using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +10,7 @@ namespace NotSoTotalCommanderApp.Model
 {
     public class FileSystemExplorerModel
     {
-        private Dictionary<string, IEnumerable<FileSystemItem>> _fileSystemInfoCache = new Dictionary<string, IEnumerable<FileSystemItem>>();
-
-        private IMessenger _messenger;
+        private ILog _logger = LogManager.GetLogger(typeof(FileSystemExplorerModel));
 
         public string CurrentDirectory { get; set; }
 
@@ -28,9 +28,8 @@ namespace NotSoTotalCommanderApp.Model
 
         public string[] SystemDrives => Directory.GetLogicalDrives();
 
-        public FileSystemExplorerModel(IMessenger messenger)
+        public FileSystemExplorerModel()
         {
-            _messenger = messenger;
         }
 
         public void Copy(IEnumerable<IFileSystemItem> items)
@@ -41,9 +40,25 @@ namespace NotSoTotalCommanderApp.Model
         /// <summary>
         /// Creates directory inside current directory 
         /// </summary>
+        /// <exception cref="InvalidPathException">
+        /// Thrown when given directory name is not valid.
+        /// </exception>
         public void CreateDirectory(string directoryName)
         {
-            Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, directoryName));
+            try
+            {
+                var path = Path.Combine(CurrentDirectory, directoryName);
+                Directory.CreateDirectory(path);
+            }
+            catch (UnauthorizedAccessException unauthorizedAccessException)
+            {
+                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error($"Given directory name: {directoryName}, is invalid", exception);
+                throw new InvalidPathException(Path.Combine(CurrentDirectory, directoryName), innerException: exception);
+            }
         }
 
         /// <summary>
@@ -97,26 +112,74 @@ namespace NotSoTotalCommanderApp.Model
             {
                 if (fileSystemItem.IsDirectory)
                 {
-                    Directory.CreateDirectory(ConstructNewPath(CurrentDirectory, fileSystemItem.Name));
+                    Directory.CreateDirectory(Path.Combine(CurrentDirectory, fileSystemItem.Name));
                     if (inDepth)
                     {
-                        CurrentDirectory = ConstructNewPath(CurrentDirectory, fileSystemItem.Name);
+                        CurrentDirectory = Path.Combine(CurrentDirectory, fileSystemItem.Name);
                         Paste(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
                     }
                 }
                 else
-                    File.Copy(fileSystemItem.Path, ConstructNewPath(CurrentDirectory, fileSystemItem.Name), canOverwrite);
+                    File.Copy(fileSystemItem.Path, Path.Combine(CurrentDirectory, fileSystemItem.Name), canOverwrite);
             }
 
             CurrentDirectory = currentDirectoryTmp;
         }
 
         /// <summary>
-        /// Creats new path from given base path and new file system item name 
+        /// Walks through directories tree and preforms some action on each directory and file 
         /// </summary>
-        /// <param name="basePath"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private static string ConstructNewPath(string basePath, string name) => $"{basePath}\\{name}";
+        /// <param name="root"> Root directory </param>
+        /// <param name="fileAction"> Action preformed on file </param>
+        /// <param name="directoryAction"> Action preformed on directory </param>
+        private void WalkDirectoryTree(DirectoryInfo root, Action<FileInfo> fileAction, Action<DirectoryInfo> directoryAction)
+        {
+            //TODO: MAKE IT PARALLEL
+            FileInfo[] files = null;
+            DirectoryInfo[] directories = null;
+
+            try
+            {
+                files = root.GetFiles();
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                _logger.Info("Unauthorized access to directory", exception);
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error("Root directory not found", exception);
+            }
+
+            if (files == null)
+                return;
+
+            foreach (var fileInfo in files)
+            {
+                try
+                {
+                    fileAction(fileInfo);
+                }
+                catch (FileNotFoundException exception)
+                {
+                    _logger.Error("File was deleted during function call", exception);
+                }
+            }
+
+            try
+            {
+                directories = root.GetDirectories();
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error("Root directory not found", exception);
+            }
+
+            foreach (var directoryInfo in directories)
+            {
+                directoryAction(directoryInfo);
+                WalkDirectoryTree(directoryInfo, fileAction, directoryAction);
+            }
+        }
     }
 }
