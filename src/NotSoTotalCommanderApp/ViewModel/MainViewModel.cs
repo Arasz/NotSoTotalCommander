@@ -2,6 +2,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using NotSoTotalCommanderApp.Enums;
+using NotSoTotalCommanderApp.Extensions;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
@@ -38,7 +39,7 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public ICommand RespondForUserActionCommand { get; private set; }
 
-        public List<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
+        public IList<IFileSystemItem> SelectedItems { get; }
 
         public string SelectedPath
         {
@@ -64,6 +65,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             _messanger.Register<UserDecisionResultMessage>(this, RetrieveUserResponse);
 
             _explorerModel = explorerModel;
+            SelectedItems = _explorerModel.SelectedItems;
             SelectedPath = SystemDrives.First();
 
             LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
@@ -159,7 +161,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     var deleteDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
                     if (deleteDecisionResult == MessageBoxResult.Yes)
                     {
-                        _explorerModel.Delete(SelectedItems);
+                        _explorerModel.Delete();
                         LoadFileSystemItems(true);
                     }
                     break;

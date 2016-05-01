@@ -1,0 +1,878 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EnumerableExtensions</name>
+    </assembly>
+    <members>
+        <member name="T:EnumerableExtensions.EnumerableExtensions">
+            <summary>
+            A helper class containing extension methods related to sequences.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``2(System.Collections.Generic.IEnumerable{``0},``1,System.Func{``0,``1})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TSum"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{``0,System.Int32})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Decimal,System.Func{``0,System.Decimal})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Byte,System.Func{``0,System.Byte})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{``0,System.Byte})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Single,System.Single,System.Func{``0,System.Single})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="epsilon"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Single,System.Func{``0,System.Single})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Double,System.Double,System.Func{``0,System.Double})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="epsilon"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AccumulateAtLeast``1(System.Collections.Generic.IEnumerable{``0},System.Double,System.Func{``0,System.Double})">
+            <summary>
+            Returns elements required to meet a given threshold by accumulating values using a provided selector.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <param name="threshold"></param>
+            <param name="selector"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AllEqual``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks if all elements in a sequence are equal.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Apply``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Prepares to apply a specified action to a sequence. Must be followed by a specifier.
+            </summary>
+            <param name="sequence"></param>
+            <param name="action"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ToAll``1(EnumerableExtensions.IActionApplyingEnumerable{``0})">
+            <summary>
+            Apply the previously specified action to all elements.
+            </summary>
+            <param name="sequence"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ToAllExceptLast``1(EnumerableExtensions.IActionApplyingEnumerable{``0})">
+            <summary>
+            Apply the previously specified action to all elements except for the last one.
+            </summary>
+            <param name="sequence"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ToAllAndThenApplyToLast``1(EnumerableExtensions.IActionApplyingEnumerable{``0},System.Action{``0})">
+            <summary>
+            Apply the previously specified action to all elements and then apply an additional action to the last one.
+            </summary>
+            <param name="sequence">Items.</param>
+            <param name="action">Action.</param>
+            <typeparam name="T">The 1st type parameter.</typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ToAllWithDifferentLast``1(EnumerableExtensions.IActionApplyingEnumerable{``0},System.Action{``0})">
+            <summary>
+            Apply the previously specified action to all elements except the last and then apply a different action to the last one.
+            </summary>
+            <param name="sequence"></param>
+            <param name="action"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Around``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns the first element that matches the given predicate, preceded by its preceding element in the original sequence and followed by its following element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ButFirst``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns all elemnts in a sequence, excluding the first.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ButLast``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns all elements in a sequence, excluding the last.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Cartesian``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1})">
+            <summary>
+            Returns every combination of elements from two given sequences.
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <param name="sequence"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Concat``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Concatenates a sequence and an element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Consume``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Immediately enumerates the sequence without returning any result.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Corresponding``2(System.Collections.Generic.IEnumerable{``0},``0,System.Collections.Generic.IEnumerable{``1})">
+            <summary>
+            Given an element present in a sequence, returns the corresponding (same-indexed) element of another sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="TResult"></typeparam>
+            <param name="sequence"></param>
+            <param name="key"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Distinct``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Boolean},System.Func{``0,System.Int32})">
+            <summary>
+            Returns distinct elements from a sequence by using a specified predicate and hash code function to compare values.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <param name="hashCodeFunction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Distinct``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Boolean})">
+            <summary>
+            Returns distinct elements from a sequence by using a specified predicate to compare values.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.IsEmpty``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks whether the given sequence is the empty set.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Enumerate``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Enumerate the sequence before continuing.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Flatten``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{``0}})">
+            <summary>
+            Flattens the nested sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Interleave``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Interleaves two sequences. Must be followed by an additional operator.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Minimum``1(EnumerableExtensions.IInterleavingEnumerable{``0})">
+            <summary>
+            When one of the two source sequences runs out, the resulting sequence ends.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.PadMaximum``1(EnumerableExtensions.IInterleavingEnumerable{``0},``0)">
+            <summary>
+            When one of the two source sequences runs out, it is padded with a default value.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.PadMaximum``1(EnumerableExtensions.IInterleavingEnumerable{``0})">
+            <summary>
+            When one of the two source sequences runs out, it is padded with a default value.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AndAddRest``1(EnumerableExtensions.IInterleavingEnumerable{``0})">
+            <summary>
+            When one of the two source sequences runs out, the remaining elements of the other sequence are returned.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Permutations``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns all sequences that are permutations of the given sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.DistinctAdjacent``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Removes any adjacent duplicates from the original sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.DistinctAdjacent``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Boolean})">
+            <summary>
+            Removes any adjacent duplicates from the original sequence, comparing them using a specified predicate.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.SkipLast``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Takes all elements from the sequence, except a count of elements leading up to the last. If the original sequence doesn't have enough elements to skip, an empty sequence is returned.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.TakeAndPad``1(System.Collections.Generic.IEnumerable{``0},System.Int32,``0)">
+            <summary>
+            Returns a specified number of contiguous elements from the start of a sequence and pads with a default defaultValue if the initial sequence was insufficient.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="count"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.TakeAndPad``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns a specified number of contiguous elements from the start of a sequence and pads with a default defaultValue if the initial sequence was insufficient.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.TakeLast``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Takes a number of elements from the given sequence, leading up to the last one. If the original sequence doesn't contain enough elements to take, all of its elements are returned. 
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.EveryOther``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns all even-indexed elements in a sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.EveryOther``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>        
+            Returns the firth, third, fifth (etc) element that satisfies a specified constraint.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.EveryOtherAfterFirst``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns all odd-indexed elements in a sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.EveryOtherAfterFirst``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns the second, fourth, sixth (etc) element that satisfies a specified constraint.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Except``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns all elements in a sequence except for the specified one.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Except``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns all elements in a sequence that do not satisfy a specified condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Except``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Int32,System.Boolean})">
+            <summary>
+            Returns all elements in a sequence that do not satisfy a specified condition. Each element's index is used in the logic of the predicate function.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a sequence containing only the first element of a given sequence if such an element exists, or an empty sequence if it doesn't exist.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.FirstOrEmpty``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns a sequence containing only the first element of a given sequence that satisfies a specified condition if such an element exists, or an empty sequence if it doesn't exist.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+             Applies an action to all elements.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="action"></param>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
+            <summary>
+             Applies an action to all elements. Each element's index is used in the logic of the action.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="action"></param>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.IfNotDefault``1(``0,System.Action{``0})">
+            <summary>
+            Invokes the action on the given class instance if it's not null, otherwise does nothing.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="item"></param>
+            <param name="action"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.IndexOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns the index of the given item in the enumerable.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.IsPermutationOf``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Determines whether a sequence is a permutation of another sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.LastOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a sequence containing only the last element of a given sequence if such an element exists, or an empty sequence if it doesn't exist.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.LastOrEmpty``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns a sequence containing only the last element of a given sequence that satisfies a specified condition if such an element exists, or an empty sequence if it doesn't exist.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Mask``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns all elements that satisfy a specified condition or the default value in place of any elements that don't satisfy it.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Mask``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Int32,System.Boolean})">
+            <summary>
+            Returns an IEnumerable where only the items whose zero-based index matches the predicate are present and the rest are replaced by the default value.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.MoreThanOne``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks if there are more than one elements in a sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.NextOf``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns the element following the first element that satisfies a given condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.NotOf``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters out elements of a given type. Must be followed by an additional operator.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.OnlyOne``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks whether the sequence contains exactly one element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Paginate``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32)">
+            <summary>
+            Bypasses a specified number of elements in a sequence and then returns a specified number of elements.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="skipCount"></param>
+            <param name="takeCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Paginate``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Returns a sequence of sequences, each inner sequence containing a specified number of elements at most. Every page is individually enumerated before it is returned.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="pageLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.PreviousOf``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns the element preceding the first element that satisfies a given condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Second``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns the second item of a sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Second``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns the second item in a sequence that satisfies a specified condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.SequenceEqual``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Func{``0,``1,System.Boolean})">
+            <summary>
+            Determines whether a specified condition is always satisfied when applied to corresponding elements of two sequences.
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <param name="sequence"></param>
+            <param name="second"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.MapsTo``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Func{``0,``1,System.Boolean})">
+            <summary>
+            Determines whether a specified condition is always satisfied when applied to corresponding elements of two sequences.
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <param name="items"></param>
+            <param name="other"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Shuffle``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a pseudorandom permutation of a sequence.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.AfterFirst``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns all elements in a sequence that follow the first occurence of an element that satisfies a specified condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.BeforeFirst``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns all elements in a sequence that precede the first occurence of an element that satisfies a specified condition.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.TakeWhileAndNext``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            Returns all elements in a sequence that satisfy a specified condition and the first element that doesn't, if any.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sequence"></param>
+            <param name="predicate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.ToUnarySequence``1(``0)">
+            <summary>
+            Returns a sequence containing only the given element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.Union``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns the union of a sequence and a new element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="newElement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.RemoveDefaults``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters out all instances equal to the default value of the given sequence.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.RemoveNull``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters out all null instances from the given sequence.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.EnumerableExtensions.RemoveIndividualDefaults``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Filters out all instances equal to the default value of their own individual type.
+            </summary>
+            <returns></returns>
+            <param name="sequence"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:EnumerableExtensions.IActionApplyingEnumerable`1">
+            <summary>
+            Represents a sequence and an action to be applied to its elements.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:EnumerableExtensions.IFluentInterface">
+            <summary>
+            Interface that is used to build fluent interfaces and hides methods declared by <see cref="T:System.Object"/> from IntelliSense.
+            </summary>
+            <remarks>
+            Code that consumes implementations of this interface should expect one of two things:
+            <list type="number">
+              <item>When referencing the interface from within the same solution (project reference), you will still see the methods this interface is meant to hide.</item>
+              <item>When referencing the interface through the compiled output assembly (external reference), the standard Object methods will be hidden as intended.</item>
+              <item>When using Resharper, be sure to configure it to respect the attribute: Options, go to Environment | IntelliSense | Completion Appearance and check "Filter members by [EditorBrowsable] attribute".</item>
+            </list>
+            See http://clarius.to/IFluentInterface for more information.
+            </remarks>
+            <nuget id="IFluentInterface"/>
+        </member>
+        <member name="M:EnumerableExtensions.IFluentInterface.GetType">
+            <summary>
+            Redeclaration that hides the <see cref="M:System.Object.GetType"/> method from IntelliSense.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.IFluentInterface.GetHashCode">
+            <summary>
+            Redeclaration that hides the <see cref="M:System.Object.GetHashCode"/> method from IntelliSense.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.IFluentInterface.ToString">
+            <summary>
+            Redeclaration that hides the <see cref="M:System.Object.ToString"/> method from IntelliSense.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.IFluentInterface.Equals(System.Object)">
+            <summary>
+            Redeclaration that hides the <see cref="M:System.Object.Equals(System.Object)"/> method from IntelliSense.
+            </summary>
+        </member>
+        <member name="P:EnumerableExtensions.IActionApplyingEnumerable`1.Sequence">
+            <summary>
+            Represents the sequence.
+            </summary>
+        </member>
+        <member name="P:EnumerableExtensions.IActionApplyingEnumerable`1.Action">
+            <summary>
+            Represents the action.
+            </summary>
+        </member>
+        <member name="T:EnumerableExtensions.IInterleavingEnumerable`1">
+            <summary>
+            Represents two sequences to be enumerated in an interleaved fashion.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:EnumerableExtensions.IInterleavingEnumerable`1.SequenceOne">
+            <summary>
+            Represents the first sequence.
+            </summary>
+        </member>
+        <member name="P:EnumerableExtensions.IInterleavingEnumerable`1.SequenceTwo">
+            <summary>
+            Represents the second sequence.
+            </summary>
+        </member>
+        <member name="T:EnumerableExtensions.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:EnumerableExtensions.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:EnumerableExtensions.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:EnumerableExtensions.__EnumerableHelpers">
+            <summary>
+            Version 1 methods.
+            </summary>
+        </member>
+        <member name="M:EnumerableExtensions.__EnumerableHelpers.ForEachWithDifferentLast``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Action{``0})">
+            <summary>
+            Applies an action to all but the last item of the enumerable and a different action to the last.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="butLastAction"></param>
+            <param name="lastAction"></param>
+        </member>
+        <member name="M:EnumerableExtensions.__EnumerableHelpers.ForEachAndAlsoForLast``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Action{``0})">
+            <summary>
+            Applies an action to all items of the enumerable and an additional action to the last.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="butLastAction"></param>
+            <param name="lastAction"></param>
+        </member>
+        <member name="M:EnumerableExtensions.__EnumerableHelpers.ForEachButExceptForLast``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Action{``0})">
+            <summary>
+            Applies two actions to all but the last item of the enumerable and only the first action to the last.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="action"></param>
+            <param name="butLastAction"></param>
+        </member>
+        <member name="M:EnumerableExtensions.__EnumerableHelpers.Before``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>
+            Returns all elements until (and excluding) the specified.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="items"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:EnumerableExtensions.ITypeRemovingEnumerable`1">
+            <summary>
+            Intermediate object to aid in removing elements by type.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.Type``1">
+            <summary>
+            Filters out all elements that can be assigned to the given type.
+            </summary>
+            <typeparam name="TRemove"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.Type``2">
+            <summary>
+            Filters out all elements that can be assigned to any of the given types.
+            </summary>
+            <typeparam name="TRemoveA"></typeparam>
+            <typeparam name="TRemoveB"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.Type``3">
+            <summary>
+            Filters out all elements that can be assigned to any of the given types.
+            </summary>
+            <typeparam name="TRemoveA"></typeparam>
+            <typeparam name="TRemoveB"></typeparam>
+            <typeparam name="TRemoveC"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.ExactType``1">
+            <summary>
+            Filters out all elements that are exactly of the given type.
+            </summary>
+            <typeparam name="TRemove"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.ExactType``2">
+            <summary>
+            Filters out all elements that are exactly of one of the given types.
+            </summary>
+            <typeparam name="TRemoveA"></typeparam>
+            <typeparam name="TRemoveB"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.ExactType``3">
+            <summary>
+            Filters out all elements that are exactly of one of the given types.
+            </summary>
+            <typeparam name="TRemoveA"></typeparam>
+            <typeparam name="TRemoveB"></typeparam>
+            <typeparam name="TRemoveC"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.AnyClassType">
+            <summary>
+            Filters out all elements that are instances of a class.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EnumerableExtensions.ITypeRemovingEnumerable`1.AnyStructType">
+            <summary>
+            Filters out all elements that are instances of a struct.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

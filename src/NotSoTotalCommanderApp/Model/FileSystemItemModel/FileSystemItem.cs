@@ -61,8 +61,6 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
             }
         }
 
-        public override bool Equals(object obj) => _fileSystemInfo.Equals(obj);
-
         public override int GetHashCode() => _fileSystemInfo.GetHashCode();
 
         public override string ToString() => _fileSystemInfo.ToString();

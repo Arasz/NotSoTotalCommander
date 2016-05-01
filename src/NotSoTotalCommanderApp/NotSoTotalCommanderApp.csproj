@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnumerableExtensions, Version=2.6.5491.23509, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EnumerableExtensions.2.6\lib\portable-net4+sl5+wp8+win8\EnumerableExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
       <Private>True</Private>
@@ -84,10 +88,12 @@
     <Compile Include="Converters\IconTypeToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Culture\CultureResources.cs" />
+    <Compile Include="Exceptions\DeleteOperationException.cs" />
     <Compile Include="Exceptions\FileSystemException.cs" />
     <Compile Include="Exceptions\FileSystemItemsGetException.cs" />
     <Compile Include="Exceptions\InvalidPathException.cs" />
     <Compile Include="Exceptions\MoveOperationException.cs" />
+    <Compile Include="Extensions\IListExtension.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />

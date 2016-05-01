@@ -28,6 +28,8 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
+
         public string[] SystemDrives => Directory.GetLogicalDrives();
 
         public FileSystemExplorerModel()
@@ -68,16 +70,31 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
+        /// Delete cached items 
         /// </summary>
-        /// <param name="items"></param>
-        public void Delete(IEnumerable<IFileSystemItem> items)
+        /// <exception cref="DeleteOperationException">
+        /// Thrown when error other than unauthorized access occurs.
+        /// </exception>
+        public void Delete()
         {
-            foreach (var fileSystemItem in items)
+            foreach (var fileSystemItem in SelectedItems)
             {
-                if (fileSystemItem.IsDirectory)
-                    Directory.Delete(fileSystemItem.Path, true);
-                else
-                    File.Delete(fileSystemItem.Path);
+                try
+                {
+                    if (fileSystemItem.IsDirectory)
+                        Directory.Delete(fileSystemItem.Path, true);
+                    else
+                        File.Delete(fileSystemItem.Path);
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    _logger.Info($"Unauthorized access to {fileSystemItem.Path}", unauthorizedAccessException);
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error($"Exception thrown when during {fileSystemItem.Path} delete attempt", exception);
+                    throw new DeleteOperationException(fileSystemItem.Path, innerException: exception);
+                }
             }
         }
 
@@ -102,7 +119,7 @@ namespace NotSoTotalCommanderApp.Model
         /// <summary>
         /// Moves cached items to destination folder 
         /// </summary>
-        public void MoveSelected(IEnumerable<IFileSystemItem> items = null)
+        public void MoveCached(IEnumerable<IFileSystemItem> items = null)
         {
             var cachedItems = items ?? CachedItems;
 
