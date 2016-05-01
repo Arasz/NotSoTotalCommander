@@ -90,7 +90,6 @@
     <Compile Include="Culture\CultureResources.cs" />
     <Compile Include="Exceptions\DeleteOperationException.cs" />
     <Compile Include="Exceptions\FileSystemException.cs" />
-    <Compile Include="Exceptions\FileSystemItemsGetException.cs" />
     <Compile Include="Exceptions\InvalidPathException.cs" />
     <Compile Include="Exceptions\MoveOperationException.cs" />
     <Compile Include="Extensions\IListExtension.cs" />

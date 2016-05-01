@@ -10,7 +10,7 @@ namespace NotSoTotalCommanderApp.Model
 {
     public class FileSystemExplorerModel
     {
-        private ILog _logger = LogManager.GetLogger(typeof(FileSystemExplorerModel));
+        private ILog _logger;
 
         private FileSystemWatcher _watcher = new FileSystemWatcher();
 
@@ -34,6 +34,7 @@ namespace NotSoTotalCommanderApp.Model
 
         public FileSystemExplorerModel()
         {
+            _logger = LogManager.GetLogger(typeof(FileSystemExplorerModel));
         }
 
         /// <summary>
@@ -214,6 +215,13 @@ namespace NotSoTotalCommanderApp.Model
             catch (DirectoryNotFoundException exception)
             {
                 _logger.Error("Root directory not found", exception);
+
+                throw new InvalidPathException(root.FullName, "Root directory not found", exception);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                _logger.Info("Unauthorized access to directory", exception);
+                throw;
             }
 
             foreach (var directoryInfo in directories)
@@ -223,21 +231,7 @@ namespace NotSoTotalCommanderApp.Model
                     WalkDirectoryTree(directoryInfo, fileAction, directoryAction, maxDepth--);
             }
 
-            try
-            {
-                files = root.GetFiles();
-            }
-            catch (UnauthorizedAccessException exception)
-            {
-                _logger.Info("Unauthorized access to directory", exception);
-            }
-            catch (DirectoryNotFoundException exception)
-            {
-                _logger.Error("Root directory not found", exception);
-            }
-
-            if (files == null)
-                return;
+            files = root.GetFiles();
 
             foreach (var fileInfo in files)
             {

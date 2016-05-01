@@ -1,7 +1,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using log4net;
 using NotSoTotalCommanderApp.Enums;
+using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Extensions;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
@@ -12,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,8 +30,8 @@ namespace NotSoTotalCommanderApp.ViewModel
     {
         private readonly FileSystemExplorerModel _explorerModel;
 
+        private readonly ILog _logger = LogManager.GetLogger(typeof(MainViewModel));
         private readonly IMessenger _messanger;
-
         private bool _itemsReloaded;
         private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
@@ -95,15 +98,13 @@ namespace NotSoTotalCommanderApp.ViewModel
                 SelectedItems.RemoveAll(element => element.Path == removedItem.Path);
         }
 
-        /// <summary>
-        /// Loads file system items informations 
-        /// </summary>
         private void LoadFileSystemItems(bool forCurrentDirectory = false)
         {
             try
             {
-                var path = forCurrentDirectory ? _explorerModel.GetCurrentDirectoryParent :
-                SelectedPath;
+                var path = forCurrentDirectory
+                    ? _explorerModel.GetCurrentDirectoryParent
+                    : SelectedPath;
 
                 var items = _explorerModel.GetAllItemsUnderPath(path);
 
@@ -117,7 +118,11 @@ namespace NotSoTotalCommanderApp.ViewModel
                     return;
 
                 _leftFieFileSystemInfos.Clear();
-                _leftFieFileSystemInfos.Add(new FileSystemBackItemProxy(new FileSystemItem(new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ?? _explorerModel.CurrentDirectory), TraversalDirection.Up)));
+                _leftFieFileSystemInfos.Add(
+                    new FileSystemBackItemProxy(
+                        new FileSystemItem(
+                            new DirectoryInfo(_explorerModel.GetCurrentDirectoryParent ??
+                                              _explorerModel.CurrentDirectory), TraversalDirection.Up)));
 
                 foreach (var extendedFileSystemInfo in items)
                 {
@@ -129,6 +134,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
             catch (UnauthorizedAccessException exception)
             {
+            }
+            catch (FileSystemException exception)
+            {
+                _logger.Info($"Exception catched inside {MethodInfo.GetCurrentMethod().Name}.", exception);
             }
         }
 
