@@ -5,8 +5,9 @@
         None,
         OpenFileSystemItem,
         Copy,
-        Paste,
+        MoveOrPaste,
         Delete,
-        Create
+        Create,
+        Cut
     }
 }

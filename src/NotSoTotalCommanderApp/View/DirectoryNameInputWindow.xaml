@@ -5,29 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotSoTotalCommanderApp.View"
         mc:Ignorable="d"
-        Title="New directory name" Height="200" Width="300"
+        Title="Set name" Height="120" Width="300"
         Icon="../Assests/Default 2.png">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Directory name: " HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
         <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="TextBox"
-                   VerticalAlignment="Center" />
+                   VerticalAlignment="Center" Margin="5,0" Focusable="True" TabIndex="0" />
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                     HorizontalAlignment="Center">
             <Button Click="OkButton_OnClick" HorizontalAlignment="Center" x:Name="OkButton"
-                Content="Ok" Width="80" Height="20" Margin="20,20" />
+                Content="Ok" Width="80" Height="20" Margin="30,0" />
             <Button Click="CancelButton_OnClick" HorizontalAlignment="Center" x:Name="CancelButton"
-                Content="Cancel" Width="80" Height="20" Margin="20,20" />
+                Content="Cancel" Width="80" Height="20" Margin="30,0" />
         </StackPanel>
     </Grid>
 </Window>

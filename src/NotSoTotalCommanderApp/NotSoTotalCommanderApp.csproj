@@ -89,6 +89,8 @@
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Culture\CultureResources.cs" />
     <Compile Include="Exceptions\DeleteOperationException.cs" />
+    <Compile Include="Exceptions\DirectoryCreationException.cs" />
+    <Compile Include="Exceptions\FileCopyException.cs" />
     <Compile Include="Exceptions\FileSystemException.cs" />
     <Compile Include="Exceptions\InvalidPathException.cs" />
     <Compile Include="Exceptions\MoveOperationException.cs" />

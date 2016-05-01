@@ -120,9 +120,22 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="Delete" InputGestureText="Ctrl+X">
+                        <MenuItem Header="Delete" InputGestureText="Delete">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/remove.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <MenuItem Header="Cut" InputGestureText="Ctrl+X">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/scissors.png" />
                             </MenuItem.Icon>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Click">
@@ -245,9 +258,22 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="Delete" InputGestureText="Ctrl+X">
+                        <MenuItem Header="Delete" InputGestureText="Delete">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/remove.png" />
+                            </MenuItem.Icon>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <command:EventToCommand Command="{Binding RespondForUserActionCommand}"
+                                                PassEventArgsToCommand="True"
+                                                EventArgsConverter="{StaticResource EventArgsToActionTypeConverter}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+
+                        <MenuItem Header="Cut" InputGestureText="Ctrl+X">
+                            <MenuItem.Icon>
+                                <Image Source="/Assests/scissors.png" />
                             </MenuItem.Icon>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Click">

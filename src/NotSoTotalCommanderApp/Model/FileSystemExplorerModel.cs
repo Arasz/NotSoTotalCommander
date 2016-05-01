@@ -10,7 +10,9 @@ namespace NotSoTotalCommanderApp.Model
 {
     public class FileSystemExplorerModel
     {
-        private ILog _logger;
+        private readonly ILog _logger;
+
+        private bool _cacheToMove;
 
         private FileSystemWatcher _watcher = new FileSystemWatcher();
 
@@ -41,8 +43,9 @@ namespace NotSoTotalCommanderApp.Model
         /// Makes copy of selected items informations. This is not copy of files. 
         /// </summary>
         /// <param name="items"> Selected items </param>
-        public void CacheSelectedItems(IEnumerable<IFileSystemItem> items)
+        public void CacheSelectedItems(IEnumerable<IFileSystemItem> items, bool cacheToMove = false)
         {
+            _cacheToMove = cacheToMove;
             CachedItems = items.ToList();
         }
 
@@ -126,7 +129,7 @@ namespace NotSoTotalCommanderApp.Model
 
             if (cachedItems == null)
             {
-                _logger.Info("Move called but no items where cached");
+                _logger.Info("Cut called but no items where cached");
                 return;
             }
 
@@ -137,10 +140,27 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
+        /// Calls move or past operation based on why items where cached 
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="canOverwrite"></param>
+        /// <param name="inDepth"></param>
+        public void MoveOrPaste(IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false, bool inDepth = false)
+        {
+            if (_cacheToMove)
+                MoveCached(items);
+            else
+                Paste(items, canOverwrite, inDepth);
+        }
+
+        /// <summary>
         /// Makes copy of cached items inside current directory 
         /// </summary>
         /// <param name="fileSystemItemsToPast"></param>
+        /// <exception cref="DirectoryCreationException"></exception>
+        /// <exception cref="InvalidPathException"></exception>
         /// <returns></returns>
+        /// <exception cref="FileCopyException"> Condition. </exception>
         public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
             var itemsToPast = fileSystemItemsToPast ?? CachedItems;
@@ -152,7 +172,20 @@ namespace NotSoTotalCommanderApp.Model
                 {
                     currentDirectoryTmp = CurrentDirectory;
                     var newDirectoryPath = Path.Combine(CurrentDirectory, fileSystemItem.Name);
-                    Directory.CreateDirectory(newDirectoryPath);
+                    try
+                    {
+                        Directory.CreateDirectory(newDirectoryPath);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("Error during directory creation", exception);
+                        throw new DirectoryCreationException(newDirectoryPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Given directory name: {newDirectoryPath}, is invalid", exception);
+                        throw new InvalidPathException(newDirectoryPath, innerException: exception);
+                    }
                     if (inDepth)
                     {
                         CurrentDirectory = newDirectoryPath;
@@ -161,7 +194,23 @@ namespace NotSoTotalCommanderApp.Model
                     CurrentDirectory = currentDirectoryTmp;
                 }
                 else
-                    File.Copy(fileSystemItem.Path, Path.Combine(CurrentDirectory, fileSystemItem.Name), canOverwrite);
+                {
+                    var destinationPath = Path.Combine(CurrentDirectory, fileSystemItem.Name);
+                    try
+                    {
+                        File.Copy(fileSystemItem.Path, destinationPath, canOverwrite);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("{}", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Soruce path: {fileSystemItem.Path} or destination path: {destinationPath} is wrong", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                }
             }
         }
 
@@ -175,9 +224,9 @@ namespace NotSoTotalCommanderApp.Model
             try
             {
                 if (itemToMove.IsDirectory)
-                    Directory.Move(itemToMove.Path, destinationPath);
-
-                File.Move(itemToMove.Path, destinationPath);
+                    Directory.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+                else
+                    File.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {

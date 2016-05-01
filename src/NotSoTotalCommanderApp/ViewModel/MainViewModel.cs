@@ -153,16 +153,20 @@ namespace NotSoTotalCommanderApp.ViewModel
                     _explorerModel.CacheSelectedItems(SelectedItems);
                     break;
 
-                case ActionType.Paste:
+                case ActionType.MoveOrPaste:
                     UserDecisionRequest(DecisionType.DepthPaste);
                     var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
-                        _explorerModel.Paste(inDepth: true);
+                        _explorerModel.MoveOrPaste(inDepth: true);
                     else if (pastDecisionResult == MessageBoxResult.No)
-                        _explorerModel.Paste();
+                        _explorerModel.MoveOrPaste();
 
                     LoadFileSystemItems();
+                    break;
+
+                case ActionType.Cut:
+                    _explorerModel.CacheSelectedItems(SelectedItems, true);
                     break;
 
                 case ActionType.Delete:

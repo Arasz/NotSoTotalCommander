@@ -31,7 +31,16 @@ namespace NotSoTotalCommanderApp.Converters
 
                     case Key.V:
                         if (keyEventArgs.KeyboardDevice.Modifiers == ModifierKeys.Control)
-                            actionType = ActionType.Paste;
+                            actionType = ActionType.MoveOrPaste;
+                        break;
+
+                    case Key.Delete:
+                        actionType = ActionType.Delete;
+                        break;
+
+                    case Key.X:
+                        if (keyEventArgs.KeyboardDevice.Modifiers == ModifierKeys.Control)
+                            actionType = ActionType.Cut;
                         break;
                 }
             }
@@ -58,7 +67,7 @@ namespace NotSoTotalCommanderApp.Converters
                         break;
 
                     case "Paste":
-                        actionType = ActionType.Paste;
+                        actionType = ActionType.MoveOrPaste;
                         break;
 
                     case "Delete":
@@ -67,6 +76,10 @@ namespace NotSoTotalCommanderApp.Converters
 
                     case "Create":
                         actionType = ActionType.Create;
+                        break;
+
+                    case "Cut":
+                        actionType = ActionType.Cut;
                         break;
                 }
             }

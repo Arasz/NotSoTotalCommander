@@ -28,7 +28,7 @@ namespace NotSoTotalCommanderApp
             switch (message.DecisionType)
             {
                 case DecisionType.DepthPaste:
-                    var copyResult = MessageBox.Show(this, "Paste all files and subdirectories?", "Paste",
+                    var copyResult = MessageBox.Show(this, "Copy all files and subdirectories?", "Copy",
                         MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.No);
                     userResponseMessage.UserDecisionResult.Enqueue(copyResult);
                     break;
