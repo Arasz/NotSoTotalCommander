@@ -33,7 +33,7 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 
         public string Name => _fileSystemInfo.Name;
 
-        public string Path => ToString();
+        public string Path => FullName;
 
         public long Size => (_fileSystemInfo as FileInfo)?.Length ?? -1;
 

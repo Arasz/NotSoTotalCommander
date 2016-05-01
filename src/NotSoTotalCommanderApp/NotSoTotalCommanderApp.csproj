@@ -85,7 +85,9 @@
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Culture\CultureResources.cs" />
     <Compile Include="Exceptions\FileSystemException.cs" />
+    <Compile Include="Exceptions\FileSystemItemsGetException.cs" />
     <Compile Include="Exceptions\InvalidPathException.cs" />
+    <Compile Include="Exceptions\MoveOperationException.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />

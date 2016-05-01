@@ -14,6 +14,8 @@ namespace NotSoTotalCommanderApp.Model
 
         private FileSystemWatcher _watcher = new FileSystemWatcher();
 
+        public IEnumerable<IFileSystemItem> CachedItems { get; private set; }
+
         public string CurrentDirectory { get; set; }
 
         public string GetCurrentDirectoryParent
@@ -26,17 +28,19 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
-        public IEnumerable<IFileSystemItem> ItemsClipboard { get; set; }
-
         public string[] SystemDrives => Directory.GetLogicalDrives();
 
         public FileSystemExplorerModel()
         {
         }
 
-        public void Copy(IEnumerable<IFileSystemItem> items)
+        /// <summary>
+        /// Makes copy of selected items informations. This is not copy of files. 
+        /// </summary>
+        /// <param name="items"> Selected items </param>
+        public void CacheSelectedItems(IEnumerable<IFileSystemItem> items)
         {
-            ItemsClipboard = items.ToList();
+            CachedItems = items.ToList();
         }
 
         /// <summary>
@@ -88,67 +92,90 @@ namespace NotSoTotalCommanderApp.Model
             if (!Directory.Exists(path))
                 return null;
 
-            string[] directories = null;
-            string[] files = null;
+            IList<FileSystemItem> fileSystemItems = new List<FileSystemItem>();
 
-            try
-            {
-                files = Directory.GetFiles(path);
-                directories = Directory.GetDirectories(path);
-            }
-            catch (UnauthorizedAccessException exception)
-            {
-                _logger.Info("Unauthorized access to directory", exception);
-            }
-            catch (Exception exception)
-            {
-                _logger.Error($"Given path {path}, is invalid", exception);
-                throw new InvalidPathException(path, innerException: exception);
-            }
+            WalkDirectoryTree(new DirectoryInfo(path), info => fileSystemItems.Add(new FileSystemItem(info)), info => fileSystemItems.Add(new FileSystemItem(info)));
 
-            if (directories == null || files == null)
-                throw new FileSystemItemsGetException(path, "Can't read files or directories for given path");
-
-            var dirInfos = directories.Select(dict => new FileSystemItem(new DirectoryInfo(dict)));
-            var filesInfos = files.Select(file => new FileSystemItem(new FileInfo(file)));
-
-            return dirInfos.Concat(filesInfos);
-        }
-
-        public void Move(IFileSystemItem itemToMove, string destinationPath)
-        {
-            if (itemToMove.IsDirectory)
-                Directory.Move(itemToMove.Path, destinationPath);
-
-            File.Move(itemToMove.Path, destinationPath);
+            return fileSystemItems;
         }
 
         /// <summary>
-        /// Copy items from collection inside current directory 
+        /// Moves cached items to destination folder 
+        /// </summary>
+        public void MoveSelected(IEnumerable<IFileSystemItem> items = null)
+        {
+            var cachedItems = items ?? CachedItems;
+
+            if (cachedItems == null)
+            {
+                _logger.Info("Move called but no items where cached");
+                return;
+            }
+
+            foreach (var fileSystemItem in CachedItems)
+                Move(fileSystemItem, CurrentDirectory);
+            // after move cached collection is not valid anymore
+            CachedItems = null;
+        }
+
+        /// <summary>
+        /// Makes copy of cached items inside current directory 
         /// </summary>
         /// <param name="fileSystemItemsToPast"></param>
         /// <returns></returns>
         public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
-            var itemsToPast = fileSystemItemsToPast ?? ItemsClipboard;
-            var currentDirectoryTmp = CurrentDirectory;
+            var itemsToPast = fileSystemItemsToPast ?? CachedItems;
+            string currentDirectoryTmp;
 
             foreach (var fileSystemItem in itemsToPast)
             {
                 if (fileSystemItem.IsDirectory)
                 {
-                    Directory.CreateDirectory(Path.Combine(CurrentDirectory, fileSystemItem.Name));
+                    currentDirectoryTmp = CurrentDirectory;
+                    var newDirectoryPath = Path.Combine(CurrentDirectory, fileSystemItem.Name);
+                    Directory.CreateDirectory(newDirectoryPath);
                     if (inDepth)
                     {
-                        CurrentDirectory = Path.Combine(CurrentDirectory, fileSystemItem.Name);
+                        CurrentDirectory = newDirectoryPath;
                         Paste(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
                     }
+                    CurrentDirectory = currentDirectoryTmp;
                 }
                 else
                     File.Copy(fileSystemItem.Path, Path.Combine(CurrentDirectory, fileSystemItem.Name), canOverwrite);
             }
+        }
 
-            CurrentDirectory = currentDirectoryTmp;
+        /// <summary>
+        /// Moves item to current directory under destination name 
+        /// </summary>
+        /// <param name="itemToMove"> Moved file system item </param>
+        /// <param name="destinationPath"> Destination directory name </param>
+        private void Move(IFileSystemItem itemToMove, string destinationPath)
+        {
+            try
+            {
+                if (itemToMove.IsDirectory)
+                    Directory.Move(itemToMove.Path, destinationPath);
+
+                File.Move(itemToMove.Path, destinationPath);
+            }
+            catch (UnauthorizedAccessException unauthorizedAccessException)
+            {
+                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error($"Given soruce path: {itemToMove.Path}, is invalid",
+                    exception);
+                throw new InvalidPathException(itemToMove.Path, innerException: exception);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
+                throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
+            }
         }
 
         /// <summary>
@@ -157,11 +184,27 @@ namespace NotSoTotalCommanderApp.Model
         /// <param name="root"> Root directory </param>
         /// <param name="fileAction"> Action preformed on file </param>
         /// <param name="directoryAction"> Action preformed on directory </param>
-        private void WalkDirectoryTree(DirectoryInfo root, Action<FileInfo> fileAction, Action<DirectoryInfo> directoryAction)
+        private void WalkDirectoryTree(DirectoryInfo root, Action<FileInfo> fileAction, Action<DirectoryInfo> directoryAction, int maxDepth = 0)
         {
             //TODO: MAKE IT PARALLEL
             FileInfo[] files = null;
             DirectoryInfo[] directories = null;
+
+            try
+            {
+                directories = root.GetDirectories();
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error("Root directory not found", exception);
+            }
+
+            foreach (var directoryInfo in directories)
+            {
+                directoryAction(directoryInfo);
+                if (maxDepth > 0)
+                    WalkDirectoryTree(directoryInfo, fileAction, directoryAction, maxDepth--);
+            }
 
             try
             {
@@ -189,21 +232,6 @@ namespace NotSoTotalCommanderApp.Model
                 {
                     _logger.Error("File was deleted during function call", exception);
                 }
-            }
-
-            try
-            {
-                directories = root.GetDirectories();
-            }
-            catch (DirectoryNotFoundException exception)
-            {
-                _logger.Error("Root directory not found", exception);
-            }
-
-            foreach (var directoryInfo in directories)
-            {
-                directoryAction(directoryInfo);
-                WalkDirectoryTree(directoryInfo, fileAction, directoryAction);
             }
         }
     }

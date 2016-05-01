@@ -139,7 +139,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.Copy:
-                    _explorerModel.Copy(SelectedItems);
+                    _explorerModel.CacheSelectedItems(SelectedItems);
                     break;
 
                 case ActionType.Paste:

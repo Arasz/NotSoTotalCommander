@@ -26,7 +26,7 @@ namespace NotSoTotalCommanderApp.Model.FileSystemItemModel
 
         public string Name { get; } = "..";
 
-        public string Path => ToString();
+        public string Path => _fileSystemItem.FullName;
 
         public long Size { get; } = -1;
 

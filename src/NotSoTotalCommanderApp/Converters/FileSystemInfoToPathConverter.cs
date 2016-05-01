@@ -16,7 +16,7 @@ namespace NotSoTotalCommanderApp.Converters
         {
             var fileSystemInfo = value as IFileSystemItem;
 
-            return fileSystemInfo?.ToString();
+            return fileSystemInfo?.Path;
         }
     }
 }
