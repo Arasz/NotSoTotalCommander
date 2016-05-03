@@ -178,6 +178,7 @@ namespace NotSoTotalCommanderApp.ViewModel
         private async void ResponseForUserActionAsync(ActionType action)
         {
             IProgress<int> progress = new Progress<int>(ReportProgress);
+            _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(progress, ref _cancellationToken);
 

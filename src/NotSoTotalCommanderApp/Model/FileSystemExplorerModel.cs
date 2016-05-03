@@ -104,6 +104,34 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        public async Task DeleteAsync(AsyncOperationResources<int> asyncOperationResources)
+        {
+            int progress = SelectedItems.Count;
+
+            foreach (var fileSystemItem in SelectedItems)
+            {
+                if (asyncOperationResources.CancellationToken.IsCancellationRequested)
+                    return;
+                try
+                {
+                    if (fileSystemItem.IsDirectory)
+                        await Task.Run(() => Directory.Delete(fileSystemItem.Path, true)).ConfigureAwait(false);
+                    else
+                        await Task.Run(() => File.Delete(fileSystemItem.Path)).ConfigureAwait(false);
+                    asyncOperationResources.Progress.Report(progress--);
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    _logger.Info($"Unauthorized access to {fileSystemItem.Path}", unauthorizedAccessException);
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error($"Exception thrown when during {fileSystemItem.Path} delete attempt", exception);
+                    throw new DeleteOperationException(fileSystemItem.Path, innerException: exception);
+                }
+            }
+        }
+
         /// <summary>
         /// Retrieves informations about all file system items under given <paramref name="path"/> 
         /// </summary>
@@ -123,25 +151,6 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
-        /// Moves cached items to destination folder 
-        /// </summary>
-        public void MoveCached(IEnumerable<IFileSystemItem> items = null)
-        {
-            var cachedItems = items ?? CachedItems;
-
-            if (cachedItems == null)
-            {
-                _logger.Info("Cut called but no items where cached");
-                return;
-            }
-
-            foreach (var fileSystemItem in CachedItems)
-                Move(fileSystemItem, CurrentDirectory);
-            // after move cached collection is not valid anymore
-            CachedItems = null;
-        }
-
-        /// <summary>
         /// Calls move or past operation based on why items where cached 
         /// </summary>
         /// <param name="items"></param>
@@ -156,7 +165,7 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         public async Task MoveOrPasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
-                    bool inDepth = false)
+                            bool inDepth = false)
         {
             if (_cacheToMove)
                 await MoveCachedAsync(asyncResources, items).ConfigureAwait(false);
@@ -193,6 +202,25 @@ namespace NotSoTotalCommanderApp.Model
                 _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
                 throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
             }
+        }
+
+        /// <summary>
+        /// Moves cached items to destination folder 
+        /// </summary>
+        private void MoveCached(IEnumerable<IFileSystemItem> items = null)
+        {
+            var cachedItems = items ?? CachedItems;
+
+            if (cachedItems == null)
+            {
+                _logger.Info("Cut called but no items where cached");
+                return;
+            }
+
+            foreach (var fileSystemItem in CachedItems)
+                Move(fileSystemItem, CurrentDirectory);
+            // after move cached collection is not valid anymore
+            CachedItems = null;
         }
 
         private async Task MoveCachedAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null)
