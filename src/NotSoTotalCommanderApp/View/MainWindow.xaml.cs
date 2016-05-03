@@ -13,6 +13,7 @@ namespace NotSoTotalCommanderApp
     public partial class MainWindow : Window
     {
         private IMessenger _messenger;
+        private ProgressReportWindow asyncOperationIndicator;
 
         public MainWindow()
         {
@@ -23,6 +24,7 @@ namespace NotSoTotalCommanderApp
             _messenger = Messenger.Default;
 
             _messenger.Register<UserDecisionRequestMessage>(this, ResponseForUserDecisionRequest);
+            _messenger.Register<AsyncOperationIndicatorMessage>(this, ResponseForAsyncOperationIndicatorRequest);
         }
 
         private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
@@ -33,6 +35,20 @@ namespace NotSoTotalCommanderApp
         private void ExitMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown(0);
+        }
+
+        private void ResponseForAsyncOperationIndicatorRequest(AsyncOperationIndicatorMessage message)
+        {
+            if (message.CancelIndicator)
+            {
+                asyncOperationIndicator.Close();
+                asyncOperationIndicator = null;
+            }
+            else
+            {
+                asyncOperationIndicator = new ProgressReportWindow();
+                asyncOperationIndicator.Show();
+            }
         }
 
         private void ResponseForUserDecisionRequest(UserDecisionRequestMessage message)

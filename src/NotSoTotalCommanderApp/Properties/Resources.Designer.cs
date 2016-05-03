@@ -106,6 +106,15 @@ namespace NotSoTotalCommanderApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Close {
@@ -255,6 +264,15 @@ namespace NotSoTotalCommanderApp.Properties {
         public static string NewDirectoryWindowName {
             get {
                 return ResourceManager.GetString("NewDirectoryWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation in progress....
+        /// </summary>
+        public static string OperationInProgress {
+            get {
+                return ResourceManager.GetString("OperationInProgress", resourceCulture);
             }
         }
         

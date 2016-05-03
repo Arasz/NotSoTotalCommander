@@ -1,6 +1,7 @@
 ﻿using log4net;
 using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using NotSoTotalCommanderApp.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -154,19 +155,13 @@ namespace NotSoTotalCommanderApp.Model
                 Paste(items, canOverwrite, inDepth);
         }
 
-        public async Task MoveOrPasteAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
+        public async Task MoveOrPasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
                     bool inDepth = false)
         {
             if (_cacheToMove)
-                await MoveCachedAsync(progress, items).ConfigureAwait(false);
+                await MoveCachedAsync(asyncResources, items).ConfigureAwait(false);
             else
-                await PasteAsync(progress, items, canOverwrite, inDepth).ConfigureAwait(false);
-        }
-
-        public async Task PasteAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
-        {
-            await Task.Run(() => Paste(fileSystemItemsToPast, canOverwrite, inDepth)).ConfigureAwait(false);
-            progress.Report(1);
+                await PasteAsync(asyncResources, items, canOverwrite, inDepth).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -200,7 +195,7 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
-        private async Task MoveCachedAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> items = null)
+        private async Task MoveCachedAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null)
         {
             var cachedItems = items ?? CachedItems;
 
@@ -214,7 +209,9 @@ namespace NotSoTotalCommanderApp.Model
             foreach (var fileSystemItem in CachedItems)
             {
                 await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
-                progress.Report(count--);
+                asyncResources.Progress.Report(count--);
+                if (asyncResources.CancellationToken.IsCancellationRequested)
+                    return;
             }
             // after move cached collection is not valid anymore
             CachedItems = null;
@@ -279,6 +276,14 @@ namespace NotSoTotalCommanderApp.Model
                     }
                 }
             }
+        }
+
+        private async Task PasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        {
+            if (asyncResources.CancellationToken.IsCancellationRequested)
+                return;
+            await Task.Run(() => Paste(fileSystemItemsToPast, canOverwrite, inDepth)).ConfigureAwait(false);
+            asyncResources.Progress.Report(1);
         }
 
         /// <summary>

@@ -100,6 +100,8 @@
     <Compile Include="Exceptions\InvalidPathException.cs" />
     <Compile Include="Exceptions\MoveOperationException.cs" />
     <Compile Include="Extensions\IListExtension.cs" />
+    <Compile Include="Messages\AsyncOperationIndicatorMessage.cs" />
+    <Compile Include="Messages\CancelAsyncOperationMessage.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
@@ -116,12 +118,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.pl.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utility\AsyncOperationResources.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
     <Compile Include="Model\FileSystemItemModel\FileSystemItem.cs" />
     <Compile Include="Enums\ActionType.cs" />
     <Compile Include="Utility\IocContainer.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="View\ProgressReportWindow.xaml.cs">
+      <DependentUpon>ProgressReportWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="ResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -152,6 +158,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ProgressReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ViewResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

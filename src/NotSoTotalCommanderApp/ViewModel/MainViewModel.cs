@@ -9,6 +9,7 @@ using NotSoTotalCommanderApp.Extensions;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using NotSoTotalCommanderApp.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -34,6 +36,8 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         private readonly ILog _logger = LogManager.GetLogger(typeof(MainViewModel));
         private readonly IMessenger _messanger;
+        private CancellationToken _cancellationToken;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private bool _itemsReloaded;
         private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
@@ -71,6 +75,7 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             _messanger = Messenger.Default;
             _messanger.Register<UserDecisionResultMessage>(this, RetrieveUserResponse);
+            _messanger.Register<CancelAsyncOperationMessage>(this, CancellationRequestedHandler);
 
             _explorerModel = explorerModel;
             SelectedItems = _explorerModel.SelectedItems;
@@ -89,6 +94,15 @@ namespace NotSoTotalCommanderApp.ViewModel
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
             CurrentDate = DateTime.Today.ToString(StaticDateTimeFormat.ShortDate, Properties.Resources.Culture);
             RaisePropertyChanged(nameof(CurrentDate));
+        }
+
+        /// <summary>
+        /// Handles user cancel async operation handler 
+        /// </summary>
+        /// <param name="message"></param>
+        private void CancellationRequestedHandler(CancelAsyncOperationMessage message)
+        {
+            _cancellationTokenSource.Cancel();
         }
 
         private void HandleSelectionEvent(EventArgs eventArgs)
@@ -164,6 +178,8 @@ namespace NotSoTotalCommanderApp.ViewModel
         private async void ResponseForUserActionAsync(ActionType action)
         {
             IProgress<int> progress = new Progress<int>(ReportProgress);
+            _cancellationToken = _cancellationTokenSource.Token;
+            AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(progress, ref _cancellationToken);
 
             switch (action)
             {
@@ -180,9 +196,17 @@ namespace NotSoTotalCommanderApp.ViewModel
                     var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
-                        await _explorerModel.MoveOrPasteAsync(progress, inDepth: true).ConfigureAwait(true);
+                    {
+                        _messanger.Send(new AsyncOperationIndicatorMessage());
+                        await _explorerModel.MoveOrPasteAsync(asyncOperationResources, inDepth: true).ConfigureAwait(true);
+                        _messanger.Send(new AsyncOperationIndicatorMessage(true));
+                    }
                     else if (pastDecisionResult == MessageBoxResult.No)
-                        _explorerModel.MoveOrPaste();
+                    {
+                        _messanger.Send(new AsyncOperationIndicatorMessage());
+                        await _explorerModel.MoveOrPasteAsync(asyncOperationResources).ConfigureAwait(true);
+                        _messanger.Send(new AsyncOperationIndicatorMessage(true));
+                    }
 
                     LoadFileSystemItems();
                     break;
