@@ -23,10 +23,7 @@
     </i:Interaction.Triggers>
 
     <Window.Resources>
-        <conv:EventArgsToActionTypeConverter x:Key="EventArgsToActionTypeConverter" />
-        <conv:SizeConverter x:Key="SizeConverter" />
-        <conv:FileSystemInfoToPathConverter x:Key="ToPathConverter" />
-        <conv:IconTypeToPathConverter x:Key="IconTypeToPathConverter" />
+        <ResourceDictionary Source="ViewResources.xaml" />
     </Window.Resources>
 
     <Grid>
@@ -45,8 +42,26 @@
         <Menu Grid.Row="0" Grid.ColumnSpan="3">
             <MenuItem Header="{Binding Source={StaticResource Resources}, Path=FileMenuItem}">
                 <MenuItem Header="{Binding Source={StaticResource Resources}, Path=LanguageMenuItem}">
-                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=PolishMenuItem}" />
-                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=EnglishMenuItem}" />
+                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=PolishMenuItem}"
+                              IsCheckable="True" IsChecked="False"
+                              Template="{StaticResource MenuItemControlExclusiveCheckTemplate}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <command:EventToCommand PassEventArgsToCommand="True" Command="{Binding ChangeLanguageCommand}"
+                                                        EventArgsConverter="{StaticResource EventArgsToCultureInfoConverter}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MenuItem>
+                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=EnglishMenuItem}"
+                              IsCheckable="True" IsChecked="True"
+                              Template="{StaticResource MenuItemControlExclusiveCheckTemplate}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <command:EventToCommand PassEventArgsToCommand="True" Command="{Binding ChangeLanguageCommand}"
+                                                        EventArgsConverter="{StaticResource EventArgsToCultureInfoConverter}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MenuItem>
                 </MenuItem>
 
                 <Separator />
@@ -352,8 +367,7 @@
 
         <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
             <StatusBarItem>
-                <TextBox Text="{Binding  Source={x:Static sys:DateTime.Today}, Mode=OneWay,
-                    ConverterCulture={x:Static prop:Resources.Culture}, StringFormat={x:Static culture:StaticDateTimeFormat.ShortDate}}" />
+                <TextBox Text="{Binding CurrentDate, Mode=OneWay}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

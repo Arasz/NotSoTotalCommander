@@ -87,6 +87,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\EventArgsToActionTypeConverter.cs" />
+    <Compile Include="Converters\EventArgsToCultureInfoConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
     <Compile Include="Converters\IconTypeToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
@@ -151,6 +152,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ViewResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

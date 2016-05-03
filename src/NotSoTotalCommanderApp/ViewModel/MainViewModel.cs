@@ -2,6 +2,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using log4net;
+using NotSoTotalCommanderApp.Culture;
 using NotSoTotalCommanderApp.Enums;
 using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Extensions;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -35,6 +37,10 @@ namespace NotSoTotalCommanderApp.ViewModel
         private bool _itemsReloaded;
         private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
+
+        public ICommand ChangeLanguageCommand { get; }
+
+        public string CurrentDate { get; private set; } = DateTime.Today.ToString(StaticDateTimeFormat.ShortDate, Properties.Resources.Culture);
 
         public INotifyCollectionChanged LeftItemsCollection => _leftFieFileSystemInfos;
 
@@ -74,6 +80,16 @@ namespace NotSoTotalCommanderApp.ViewModel
             LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
             RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
+            ChangeLanguageCommand = new RelayCommand<CultureInfo>(ChangeLanguage);
+        }
+
+        public void ChangeLanguage(CultureInfo cultureInfo)
+        {
+            CultureResources.ChangeCulture(cultureInfo);
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+            CurrentDate = DateTime.Today.ToString(StaticDateTimeFormat.ShortDate, Properties.Resources.Culture);
+            RaisePropertyChanged(nameof(CurrentDate));
         }
 
         private void HandleSelectionEvent(EventArgs eventArgs)
