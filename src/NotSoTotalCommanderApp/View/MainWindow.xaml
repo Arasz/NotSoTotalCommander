@@ -7,11 +7,12 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:command="http://www.galasoft.ch/mvvmlight"
         xmlns:utils="clr-namespace:NotSoTotalCommanderApp.Utility"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:prop="clr-namespace:NotSoTotalCommanderApp.Properties"
         xmlns:enum="clr-namespace:NotSoTotalCommanderApp.Enums"
         mc:Ignorable="d"
-        Title="NotSoTotalCommander" Height="400" Width="800" x:Name="mainWindow"
-        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
-        Icon="../Assests/Default 2.png">
+        Title="{Binding Path=AppName, Source={StaticResource Resources}}" Height="400" Width="800" x:Name="mainWindow"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -40,9 +41,19 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0" Grid.ColumnSpan="3">
-            <MenuItem Header="Language">
-                <MenuItem Header="Polish" />
-                <MenuItem Header="English" />
+            <MenuItem Header="{Binding Source={StaticResource Resources}, Path=FileMenuItem}">
+                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=LanguageMenuItem}">
+                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=PolishMenuItem}" />
+                    <MenuItem Header="{Binding Source={StaticResource Resources}, Path=EnglishMenuItem}" />
+                </MenuItem>
+
+                <Separator />
+
+                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=ExitMenuItem}" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding Source={StaticResource Resources}, Path=HelpMenuItem}">
+                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=AboutMenuItem}" />
             </MenuItem>
         </Menu>
 
@@ -94,7 +105,8 @@
 
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Copy" InputGestureText="Ctrl+C">
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=CopyMenuItem}"
+                                  InputGestureText="Ctrl+C">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/copy.png" />
                             </MenuItem.Icon>
@@ -107,7 +119,8 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="Paste" InputGestureText="Ctrl+V">
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=PasteMenuItem}"
+                                  InputGestureText="Ctrl+V">
                             <MenuItem.Icon>
                                 <Image Source="../Assests/clipboard-paste-option.png" />
                             </MenuItem.Icon>
@@ -120,7 +133,8 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="Delete" InputGestureText="Delete">
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=DeleteMenuItem}"
+                                  InputGestureText="Delete">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/remove.png" />
                             </MenuItem.Icon>
@@ -133,7 +147,8 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="Cut" InputGestureText="Ctrl+X">
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=DeleteMenuItem}"
+                                  InputGestureText="Ctrl+X">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/scissors.png" />
                             </MenuItem.Icon>
@@ -148,7 +163,8 @@
 
                         <Separator />
 
-                        <MenuItem Header="Create" InputGestureText="Ctrl+D">
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=CreateDirMenuItem}"
+                                  InputGestureText="Ctrl+D">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/folder.png" />
                             </MenuItem.Icon>
@@ -173,16 +189,21 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"
+                        <GridViewColumn Header="{Binding Source={StaticResource Resources}, Path=NameColumnHeader}"
+                                        DisplayMemberBinding="{Binding Name}"
                                         utils:GridViewSort.PropertyName="Name" />
-                        <GridViewColumn Header="Extension" DisplayMemberBinding="{Binding Extension}"
+                        <GridViewColumn Header="{Binding Source={StaticResource Resources}, Path=ExtensionColumnHeader}"
+                                        DisplayMemberBinding="{Binding Extension}"
                                         utils:GridViewSort.PropertyName="Extension" />
-                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size,
+                        <GridViewColumn Header="{Binding Source={StaticResource Resources}, Path=SizeColumnHeader}"
+                                        DisplayMemberBinding="{Binding Size,
                                         Converter={StaticResource SizeConverter}}"
                                         utils:GridViewSort.PropertyName="Size" />
-                        <GridViewColumn Header="Creation time" DisplayMemberBinding="{Binding CreationTime}"
+                        <GridViewColumn Header="{Binding Source={StaticResource Resources}, Path=CreationTimeColumnHeader}"
+                                        DisplayMemberBinding="{Binding CreationTime}"
                                         utils:GridViewSort.PropertyName="CreationTime" />
-                        <GridViewColumn Header="Attribute" DisplayMemberBinding="{Binding Attributes}"
+                        <GridViewColumn Header="{Binding Source={StaticResource Resources}, Path=AttributeColumnHeader}"
+                                        DisplayMemberBinding="{Binding Attributes}"
                                         utils:GridViewSort.PropertyName="Attributes" />
                     </GridView>
                 </ListView.View>
@@ -329,7 +350,8 @@
 
         <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
             <StatusBarItem>
-                <TextBox Text="Status text" />
+                <TextBox Text="{Binding  Source={x:Static sys:DateTime.Now}, Mode=OneWay,
+                    ConverterCulture={x:Static prop:Resources.Culture}}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

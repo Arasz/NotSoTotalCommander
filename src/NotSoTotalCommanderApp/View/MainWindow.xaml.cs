@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using NotSoTotalCommanderApp.Culture;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.View;
 using System;
@@ -15,6 +16,8 @@ namespace NotSoTotalCommanderApp
 
         public MainWindow()
         {
+            CultureResources.ChangeCulture(Properties.Settings.Default.DefaultCulture);
+
             InitializeComponent();
 
             _messenger = Messenger.Default;
@@ -28,19 +31,19 @@ namespace NotSoTotalCommanderApp
             switch (message.DecisionType)
             {
                 case DecisionType.DepthPaste:
-                    var copyResult = MessageBox.Show(this, "Copy all files and subdirectories?", "Copy",
+                    var copyResult = MessageBox.Show(this, Properties.Resources.DepthPasteMessage, Properties.Resources.CopyMenuItem,
                         MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.No);
                     userResponseMessage.UserDecisionResult.Enqueue(copyResult);
                     break;
 
                 case DecisionType.Override:
-                    var overrideResult = MessageBox.Show(this, "Copy all files and subdirectories?", "Interaction",
+                    var overrideResult = MessageBox.Show(this, Properties.Resources.DepthPasteMessage, "Interaction",
                         MessageBoxButton.YesNoCancel);
                     userResponseMessage.UserDecisionResult.Enqueue(overrideResult);
                     break;
 
                 case DecisionType.Delete:
-                    var deleteResult = MessageBox.Show(this, "Are you sure?", "Delete",
+                    var deleteResult = MessageBox.Show(this, Properties.Resources.DeleteDecisionMessage, Properties.Resources.DeleteMenuItem,
                         MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
                     userResponseMessage.UserDecisionResult.Enqueue(deleteResult);
                     break;

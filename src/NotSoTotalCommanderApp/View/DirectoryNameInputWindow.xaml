@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotSoTotalCommanderApp.View"
         mc:Ignorable="d"
-        Title="Set name" Height="120" Width="300"
-        Icon="../Assests/Default 2.png">
+        Title="{Binding Source={StaticResource Resources}, Path=NewDirectoryWindowName}" Height="120" Width="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
@@ -18,8 +17,8 @@
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Directory name: " HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Source={StaticResource Resources}, Path=NewDirectoryStatement}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" />
         <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="TextBox"
                    VerticalAlignment="Center" Margin="5,0" Focusable="True" TabIndex="0" />
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"

@@ -56,11 +56,11 @@ namespace NotSoTotalCommanderApp.Converters
             else if (value is RoutedEventArgs)
             {
                 var routedEventArgs = (RoutedEventArgs)value;
-                var operation = (string)parameter;
+                var operation = ((MenuItem)routedEventArgs.Source).Header.ToString();
 
                 routedEventArgs.Handled = true;
 
-                switch (((MenuItem)routedEventArgs.Source).Header.ToString())
+                switch (operation)
                 {
                     case "Copy":
                         actionType = ActionType.Copy;
@@ -74,7 +74,7 @@ namespace NotSoTotalCommanderApp.Converters
                         actionType = ActionType.Delete;
                         break;
 
-                    case "Create":
+                    case "Create directory":
                         actionType = ActionType.Create;
                         break;
 
