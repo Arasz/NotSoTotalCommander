@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NotSoTotalCommanderApp.Model
 {
@@ -153,6 +154,72 @@ namespace NotSoTotalCommanderApp.Model
                 Paste(items, canOverwrite, inDepth);
         }
 
+        public async Task MoveOrPasteAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
+                    bool inDepth = false)
+        {
+            if (_cacheToMove)
+                await MoveCachedAsync(progress, items).ConfigureAwait(false);
+            else
+                await PasteAsync(progress, items, canOverwrite, inDepth).ConfigureAwait(false);
+        }
+
+        public async Task PasteAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        {
+            await Task.Run(() => Paste(fileSystemItemsToPast, canOverwrite, inDepth)).ConfigureAwait(false);
+            progress.Report(1);
+        }
+
+        /// <summary>
+        /// Moves item to current directory under destination name 
+        /// </summary>
+        /// <param name="itemToMove"> Moved file system item </param>
+        /// <param name="destinationPath"> Destination directory name </param>
+        private void Move(IFileSystemItem itemToMove, string destinationPath)
+        {
+            try
+            {
+                if (itemToMove.IsDirectory)
+                    Directory.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+                else
+                    File.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+            }
+            catch (UnauthorizedAccessException unauthorizedAccessException)
+            {
+                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error($"Given soruce path: {itemToMove.Path}, is invalid",
+                    exception);
+                throw new InvalidPathException(itemToMove.Path, innerException: exception);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
+                throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
+            }
+        }
+
+        private async Task MoveCachedAsync(IProgress<int> progress, IEnumerable<IFileSystemItem> items = null)
+        {
+            var cachedItems = items ?? CachedItems;
+
+            if (cachedItems == null)
+            {
+                _logger.Info("Cut called but no items where cached");
+                return;
+            }
+
+            int count = cachedItems.Count();
+            foreach (var fileSystemItem in CachedItems)
+            {
+                await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
+                progress.Report(count--);
+            }
+            // after move cached collection is not valid anymore
+            CachedItems = null;
+        }
+
         /// <summary>
         /// Makes copy of cached items inside current directory 
         /// </summary>
@@ -161,7 +228,7 @@ namespace NotSoTotalCommanderApp.Model
         /// <exception cref="InvalidPathException"></exception>
         /// <returns></returns>
         /// <exception cref="FileCopyException"> Condition. </exception>
-        public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        private void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
             var itemsToPast = fileSystemItemsToPast ?? CachedItems;
             string currentDirectoryTmp;
@@ -211,37 +278,6 @@ namespace NotSoTotalCommanderApp.Model
                         throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Moves item to current directory under destination name 
-        /// </summary>
-        /// <param name="itemToMove"> Moved file system item </param>
-        /// <param name="destinationPath"> Destination directory name </param>
-        private void Move(IFileSystemItem itemToMove, string destinationPath)
-        {
-            try
-            {
-                if (itemToMove.IsDirectory)
-                    Directory.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
-                else
-                    File.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
-            }
-            catch (UnauthorizedAccessException unauthorizedAccessException)
-            {
-                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
-            }
-            catch (DirectoryNotFoundException exception)
-            {
-                _logger.Error($"Given soruce path: {itemToMove.Path}, is invalid",
-                    exception);
-                throw new InvalidPathException(itemToMove.Path, innerException: exception);
-            }
-            catch (Exception exception)
-            {
-                _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
-                throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
             }
         }
 

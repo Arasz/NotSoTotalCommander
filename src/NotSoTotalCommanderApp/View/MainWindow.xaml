@@ -167,7 +167,7 @@
                             </i:Interaction.Triggers>
                         </MenuItem>
 
-                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=DeleteMenuItem}"
+                        <MenuItem Header="{Binding Source={StaticResource Resources}, Path=CutMenuItem}"
                                   InputGestureText="Ctrl+X">
                             <MenuItem.Icon>
                                 <Image Source="/Assests/scissors.png" />

@@ -37,7 +37,6 @@ namespace NotSoTotalCommanderApp.ViewModel
         private bool _itemsReloaded;
         private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
-
         public ICommand ChangeLanguageCommand { get; }
 
         public string CurrentDate { get; private set; } = DateTime.Today.ToString(StaticDateTimeFormat.ShortDate, Properties.Resources.Culture);
@@ -78,7 +77,7 @@ namespace NotSoTotalCommanderApp.ViewModel
             SelectedPath = SystemDrives.First();
 
             LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
-            RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserAction);
+            RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserActionAsync);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);
             ChangeLanguageCommand = new RelayCommand<CultureInfo>(ChangeLanguage);
         }
@@ -157,8 +156,15 @@ namespace NotSoTotalCommanderApp.ViewModel
             }
         }
 
-        private void ResponseForUserAction(ActionType action)
+        private void ReportProgress(int progress)
         {
+            Console.WriteLine($"Reported progress: {progress}");
+        }
+
+        private async void ResponseForUserActionAsync(ActionType action)
+        {
+            IProgress<int> progress = new Progress<int>(ReportProgress);
+
             switch (action)
             {
                 case ActionType.OpenFileSystemItem:
@@ -174,7 +180,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
-                        _explorerModel.MoveOrPaste(inDepth: true);
+                        await _explorerModel.MoveOrPasteAsync(progress, inDepth: true).ConfigureAwait(true);
                     else if (pastDecisionResult == MessageBoxResult.No)
                         _explorerModel.MoveOrPaste();
 
