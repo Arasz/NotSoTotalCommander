@@ -9,14 +9,20 @@
         Height="200" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding Source={StaticResource Resources}, Path=OperationInProgress}"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    Grid.Row="0" FontSize="20" />
-        <ProgressBar Grid.Row="1" IsIndeterminate="True" Margin="10" />
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Grid.Row="1">
+            <Run Text="{Binding Source={StaticResource Resources}, Path=ProgressReportMessage, Mode=OneWay}" />
+            <Run x:Name="Run" Text="0" />
+        </TextBlock>
+        <ProgressBar Grid.Row="2" IsIndeterminate="True" Margin="10" />
         <Button Content="{Binding Source={StaticResource Resources}, Path=Cancel}"
                 Grid.Row="3" Margin="50,5" Click="CancelButton_OnClick" />
     </Grid>

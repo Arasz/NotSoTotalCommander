@@ -295,6 +295,15 @@ namespace NotSoTotalCommanderApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to modified files or directories: .
+        /// </summary>
+        public static string ProgressReportMessage {
+            get {
+                return ResourceManager.GetString("ProgressReportMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string SizeColumnHeader {

@@ -14,12 +14,18 @@ namespace NotSoTotalCommanderApp.View
         public ProgressReportWindow()
         {
             _messenger = Messenger.Default;
+            _messenger.Register<ReportProgressMessage<int>>(this, ProgressReportHandle);
             InitializeComponent();
         }
 
         private void CancelButton_OnClick(object sender, RoutedEventArgs e)
         {
             _messenger.Send(new CancelAsyncOperationMessage());
+        }
+
+        private void ProgressReportHandle(ReportProgressMessage<int> message)
+        {
+            Run.Text = $" {message.Progress}";
         }
     }
 }

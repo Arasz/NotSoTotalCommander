@@ -199,4 +199,7 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ProgressReportMessage" xml:space="preserve">
+    <value>modified files or directories: </value>
+  </data>
 </root>

@@ -102,6 +102,7 @@
     <Compile Include="Extensions\IListExtension.cs" />
     <Compile Include="Messages\AsyncOperationIndicatorMessage.cs" />
     <Compile Include="Messages\CancelAsyncOperationMessage.cs" />
+    <Compile Include="Messages\ReportProgressMessage.cs" />
     <Compile Include="Messages\UserDecisionRequestMessage.cs" />
     <Compile Include="Messages\UserDecisionResultMessage.cs" />
     <Compile Include="Model\FileSystemExplorerModel.cs" />
