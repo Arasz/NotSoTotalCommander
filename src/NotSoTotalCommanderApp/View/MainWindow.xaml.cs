@@ -25,6 +25,16 @@ namespace NotSoTotalCommanderApp
             _messenger.Register<UserDecisionRequestMessage>(this, ResponseForUserDecisionRequest);
         }
 
+        private void AboutMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            AboutWindow.Show();
+        }
+
+        private void ExitMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown(0);
+        }
+
         private void ResponseForUserDecisionRequest(UserDecisionRequestMessage message)
         {
             var userResponseMessage = new UserDecisionResultMessage();

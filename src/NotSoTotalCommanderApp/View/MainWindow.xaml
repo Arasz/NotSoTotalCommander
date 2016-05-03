@@ -13,7 +13,8 @@
         xmlns:globalization="clr-namespace:System.Globalization;assembly=mscorlib"
         xmlns:culture="clr-namespace:NotSoTotalCommanderApp.Culture"
         mc:Ignorable="d"
-        Title="{Binding Path=AppName, Source={StaticResource Resources}}" Height="400" Width="800" x:Name="mainWindow"
+        Title="{Binding Path=AppName, Source={StaticResource Resources}}"
+        Height="400" Width="800" x:Name="mainWindow" WindowStartupLocation="CenterScreen"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
     <i:Interaction.Triggers>
@@ -66,11 +67,13 @@
 
                 <Separator />
 
-                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=ExitMenuItem}" />
+                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=ExitMenuItem}"
+                          Click="ExitMenuItem_OnClick" />
             </MenuItem>
 
             <MenuItem Header="{Binding Source={StaticResource Resources}, Path=HelpMenuItem}">
-                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=AboutMenuItem}" />
+                <MenuItem Header="{Binding Source={StaticResource Resources}, Path=AboutMenuItem}"
+                          Click="AboutMenuItem_OnClick" />
             </MenuItem>
         </Menu>
 
