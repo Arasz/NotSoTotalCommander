@@ -32,6 +32,8 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        public bool IsAnyDirectoryCached => CachedItems?.Any((item => item.IsDirectory)) ?? false;
+
         public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
         public string[] SystemDrives => Directory.GetLogicalDrives();
@@ -233,13 +235,13 @@ namespace NotSoTotalCommanderApp.Model
                 return;
             }
 
-            int count = cachedItems.Count();
+            int progress = 1;
             foreach (var fileSystemItem in CachedItems)
             {
-                await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
-                asyncResources.Progress.Report(count--);
                 if (asyncResources.CancellationToken.IsCancellationRequested)
                     return;
+                await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
+                asyncResources.Progress.Report(progress++);
             }
             // after move cached collection is not valid anymore
             CachedItems = null;
@@ -308,10 +310,70 @@ namespace NotSoTotalCommanderApp.Model
 
         private async Task PasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
-            if (asyncResources.CancellationToken.IsCancellationRequested)
-                return;
-            await Task.Run(() => Paste(fileSystemItemsToPast, canOverwrite, inDepth)).ConfigureAwait(false);
-            asyncResources.Progress.Report(1);
+            int progress = 1;
+            var itemsToPast = fileSystemItemsToPast ?? CachedItems;
+
+            var firstItem = itemsToPast.First();
+            var root = firstItem.FullName.Replace(firstItem.Name, "");
+
+            Queue<IFileSystemItem> stack = new Queue<IFileSystemItem>(itemsToPast);
+            while (stack.Any())
+            {
+                if (asyncResources.CancellationToken.IsCancellationRequested)
+                    return;
+
+                var fileSystemItem = stack.Dequeue();
+
+                var destinationPath = Path.Combine(CurrentDirectory, fileSystemItem.Path.Replace(root, ""));
+
+                if (destinationPath == fileSystemItem.Path)
+                {
+                    _logger.Info($"{destinationPath} file or directory exist in current directory");
+                    return;
+                }
+
+                if (fileSystemItem.IsDirectory)
+                {
+                    try
+                    {
+                        await Task.Run(() => Directory.CreateDirectory(destinationPath)).ConfigureAwait(false);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("Error during directory creation", exception);
+                        throw new DirectoryCreationException(destinationPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Given directory name: {destinationPath}, is invalid", exception);
+                        throw new InvalidPathException(destinationPath, innerException: exception);
+                    }
+                    if (inDepth)
+                    {
+                        foreach (var item in GetAllItemsUnderPath(fileSystemItem.Path))
+                            stack.Enqueue(item);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        await Task.Run(() => File.Copy(fileSystemItem.Path, destinationPath, canOverwrite)).ConfigureAwait(false);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("{}", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Soruce path: {fileSystemItem.Path} or destination path: {destinationPath} is wrong", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                }
+
+                asyncResources.Progress.Report(progress++);
+            }
         }
 
         /// <summary>

@@ -41,6 +41,7 @@ namespace NotSoTotalCommanderApp.ViewModel
         private bool _itemsReloaded;
         private UserDecisionResultMessage _lastDecisionResultMessage;
         private ObservableCollection<IFileSystemItem> _leftFieFileSystemInfos = new ObservableCollection<IFileSystemItem>();
+        private string _selectedPath;
         public ICommand ChangeLanguageCommand { get; }
 
         public string CurrentDate { get; private set; } = DateTime.Today.ToString(StaticDateTimeFormat.ShortDate, Properties.Resources.Culture);
@@ -55,11 +56,11 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public string SelectedPath
         {
-            get { return _explorerModel.CurrentDirectory; }
+            get { return _selectedPath; }
             set
             {
                 if (value == null) return;
-                _explorerModel.CurrentDirectory = value;
+                _selectedPath = value;
                 RaisePropertyChanged(nameof(SelectedPath));
             }
         }
@@ -96,10 +97,6 @@ namespace NotSoTotalCommanderApp.ViewModel
             RaisePropertyChanged(nameof(CurrentDate));
         }
 
-        /// <summary>
-        /// Handles user cancel async operation handler 
-        /// </summary>
-        /// <param name="message"></param>
         private void CancellationRequestedHandler(CancelAsyncOperationMessage message)
         {
             _cancellationTokenSource.Cancel();
@@ -132,8 +129,10 @@ namespace NotSoTotalCommanderApp.ViewModel
             try
             {
                 var path = forCurrentDirectory
-                    ? _explorerModel.GetCurrentDirectoryParent
+                    ? _explorerModel.CurrentDirectory
                     : SelectedPath;
+
+                _explorerModel.CurrentDirectory = path;
 
                 var items = _explorerModel.GetAllItemsUnderPath(path);
 
@@ -172,7 +171,7 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         private void ReportProgress(int progress)
         {
-            Console.WriteLine($"Reported progress: {progress}");
+            _messanger.Send(new ReportProgressMessage<int>(progress));
         }
 
         private async void ResponseForUserActionAsync(ActionType action)
@@ -194,10 +193,12 @@ namespace NotSoTotalCommanderApp.ViewModel
 
                 case ActionType.MoveOrPaste:
 
-                    if (SelectedItems.Any((item => item.IsDirectory)))
+                    if (_explorerModel.IsAnyDirectoryCached)
                         UserDecisionRequest(DecisionType.DepthPaste);
 
-                    var pastDecisionResult = _lastDecisionResultMessage?.UserDecisionResult.Dequeue();
+                    MessageBoxResult pastDecisionResult = MessageBoxResult.None;
+                    if (_lastDecisionResultMessage?.UserDecisionResult.Any() ?? false)
+                        pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
                     {
@@ -212,7 +213,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                         _messanger.Send(new AsyncOperationIndicatorMessage(true));
                     }
 
-                    LoadFileSystemItems();
+                    LoadFileSystemItems(true);
                     break;
 
                 case ActionType.Cut:
@@ -234,7 +235,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                     var cresteResponse = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
                     var newName = _lastDecisionResultMessage.Name;
                     _explorerModel.CreateDirectory(newName);
-                    LoadFileSystemItems();
+                    LoadFileSystemItems(true);
                     break;
             }
         }
