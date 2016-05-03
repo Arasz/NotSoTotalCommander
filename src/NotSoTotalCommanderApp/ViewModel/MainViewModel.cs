@@ -193,8 +193,11 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.MoveOrPaste:
-                    UserDecisionRequest(DecisionType.DepthPaste);
-                    var pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+
+                    if (SelectedItems.Any((item => item.IsDirectory)))
+                        UserDecisionRequest(DecisionType.DepthPaste);
+
+                    var pastDecisionResult = _lastDecisionResultMessage?.UserDecisionResult.Dequeue();
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
                     {
@@ -202,7 +205,7 @@ namespace NotSoTotalCommanderApp.ViewModel
                         await _explorerModel.MoveOrPasteAsync(asyncOperationResources, inDepth: true).ConfigureAwait(true);
                         _messanger.Send(new AsyncOperationIndicatorMessage(true));
                     }
-                    else if (pastDecisionResult == MessageBoxResult.No)
+                    else
                     {
                         _messanger.Send(new AsyncOperationIndicatorMessage());
                         await _explorerModel.MoveOrPasteAsync(asyncOperationResources).ConfigureAwait(true);
