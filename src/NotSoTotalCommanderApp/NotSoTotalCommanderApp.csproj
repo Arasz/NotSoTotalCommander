@@ -91,6 +91,7 @@
     <Compile Include="Converters\IconTypeToPathConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Culture\CultureResources.cs" />
+    <Compile Include="Culture\StaticDateTimeFormat.cs" />
     <Compile Include="Exceptions\DeleteOperationException.cs" />
     <Compile Include="Exceptions\DirectoryCreationException.cs" />
     <Compile Include="Exceptions\FileCopyException.cs" />
@@ -108,6 +109,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.pl.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.pl.resx</DependentUpon>
     </Compile>
     <Compile Include="Utility\GridViewSort.cs" />
     <Compile Include="Model\FileSystemItemModel\FileSystemItem.cs" />
@@ -191,6 +197,10 @@
     <Resource Include="Assests\up.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.pl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.pl.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

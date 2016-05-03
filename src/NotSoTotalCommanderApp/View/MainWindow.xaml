@@ -10,6 +10,8 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:prop="clr-namespace:NotSoTotalCommanderApp.Properties"
         xmlns:enum="clr-namespace:NotSoTotalCommanderApp.Enums"
+        xmlns:globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+        xmlns:culture="clr-namespace:NotSoTotalCommanderApp.Culture"
         mc:Ignorable="d"
         Title="{Binding Path=AppName, Source={StaticResource Resources}}" Height="400" Width="800" x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
@@ -350,8 +352,8 @@
 
         <StatusBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
             <StatusBarItem>
-                <TextBox Text="{Binding  Source={x:Static sys:DateTime.Now}, Mode=OneWay,
-                    ConverterCulture={x:Static prop:Resources.Culture}}" />
+                <TextBox Text="{Binding  Source={x:Static sys:DateTime.Today}, Mode=OneWay,
+                    ConverterCulture={x:Static prop:Resources.Culture}, StringFormat={x:Static culture:StaticDateTimeFormat.ShortDate}}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
