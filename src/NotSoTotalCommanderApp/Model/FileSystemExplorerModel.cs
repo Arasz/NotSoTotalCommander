@@ -1,10 +1,12 @@
 ﻿using log4net;
 using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using NotSoTotalCommanderApp.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NotSoTotalCommanderApp.Model
 {
@@ -29,6 +31,8 @@ namespace NotSoTotalCommanderApp.Model
                 return string.IsNullOrEmpty(root) ? null : root;
             }
         }
+
+        public bool IsAnyDirectoryCached => CachedItems?.Any((item => item.IsDirectory)) ?? false;
 
         public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
@@ -102,6 +106,34 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        public async Task DeleteAsync(AsyncOperationResources<int> asyncOperationResources)
+        {
+            int progress = SelectedItems.Count;
+
+            foreach (var fileSystemItem in SelectedItems)
+            {
+                if (asyncOperationResources.CancellationToken.IsCancellationRequested)
+                    return;
+                try
+                {
+                    if (fileSystemItem.IsDirectory)
+                        await Task.Run(() => Directory.Delete(fileSystemItem.Path, true)).ConfigureAwait(false);
+                    else
+                        await Task.Run(() => File.Delete(fileSystemItem.Path)).ConfigureAwait(false);
+                    asyncOperationResources.Progress.Report(progress--);
+                }
+                catch (UnauthorizedAccessException unauthorizedAccessException)
+                {
+                    _logger.Info($"Unauthorized access to {fileSystemItem.Path}", unauthorizedAccessException);
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error($"Exception thrown when during {fileSystemItem.Path} delete attempt", exception);
+                    throw new DeleteOperationException(fileSystemItem.Path, innerException: exception);
+                }
+            }
+        }
+
         /// <summary>
         /// Retrieves informations about all file system items under given <paramref name="path"/> 
         /// </summary>
@@ -121,9 +153,63 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
+        /// Calls move or past operation based on why items where cached 
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="canOverwrite"></param>
+        /// <param name="inDepth"></param>
+        public void MoveOrPaste(IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false, bool inDepth = false)
+        {
+            if (_cacheToMove)
+                MoveCached(items);
+            else
+                Paste(items, canOverwrite, inDepth);
+        }
+
+        public async Task MoveOrPasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
+                            bool inDepth = false)
+        {
+            if (_cacheToMove)
+                await MoveCachedAsync(asyncResources, items).ConfigureAwait(false);
+            else
+                await PasteAsync(asyncResources, items, canOverwrite, inDepth).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Moves item to current directory under destination name 
+        /// </summary>
+        /// <param name="itemToMove"> Moved file system item </param>
+        /// <param name="destinationPath"> Destination directory name </param>
+        private void Move(IFileSystemItem itemToMove, string destinationPath)
+        {
+            try
+            {
+                if (itemToMove.IsDirectory)
+                    Directory.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+                else
+                    File.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+            }
+            catch (UnauthorizedAccessException unauthorizedAccessException)
+            {
+                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
+            }
+            catch (DirectoryNotFoundException exception)
+            {
+                _logger.Error($"Given soruce path: {itemToMove.Path}, is invalid",
+                    exception);
+                throw new InvalidPathException(itemToMove.Path, innerException: exception);
+            }
+            catch (Exception exception)
+            {
+                _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
+                throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
+            }
+        }
+
+        /// <summary>
         /// Moves cached items to destination folder 
         /// </summary>
-        public void MoveCached(IEnumerable<IFileSystemItem> items = null)
+        private void MoveCached(IEnumerable<IFileSystemItem> items = null)
         {
             var cachedItems = items ?? CachedItems;
 
@@ -139,18 +225,26 @@ namespace NotSoTotalCommanderApp.Model
             CachedItems = null;
         }
 
-        /// <summary>
-        /// Calls move or past operation based on why items where cached 
-        /// </summary>
-        /// <param name="items"></param>
-        /// <param name="canOverwrite"></param>
-        /// <param name="inDepth"></param>
-        public void MoveOrPaste(IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false, bool inDepth = false)
+        private async Task MoveCachedAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null)
         {
-            if (_cacheToMove)
-                MoveCached(items);
-            else
-                Paste(items, canOverwrite, inDepth);
+            var cachedItems = items ?? CachedItems;
+
+            if (cachedItems == null)
+            {
+                _logger.Info("Cut called but no items where cached");
+                return;
+            }
+
+            int progress = 1;
+            foreach (var fileSystemItem in CachedItems)
+            {
+                if (asyncResources.CancellationToken.IsCancellationRequested)
+                    return;
+                await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
+                asyncResources.Progress.Report(progress++);
+            }
+            // after move cached collection is not valid anymore
+            CachedItems = null;
         }
 
         /// <summary>
@@ -161,7 +255,7 @@ namespace NotSoTotalCommanderApp.Model
         /// <exception cref="InvalidPathException"></exception>
         /// <returns></returns>
         /// <exception cref="FileCopyException"> Condition. </exception>
-        public void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        private void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
             var itemsToPast = fileSystemItemsToPast ?? CachedItems;
             string currentDirectoryTmp;
@@ -214,34 +308,71 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
-        /// <summary>
-        /// Moves item to current directory under destination name 
-        /// </summary>
-        /// <param name="itemToMove"> Moved file system item </param>
-        /// <param name="destinationPath"> Destination directory name </param>
-        private void Move(IFileSystemItem itemToMove, string destinationPath)
+        private async Task PasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
         {
-            try
+            int progress = 1;
+            var itemsToPast = fileSystemItemsToPast ?? CachedItems;
+
+            var firstItem = itemsToPast.First();
+            var root = firstItem.FullName.Replace(firstItem.Name, "");
+
+            Queue<IFileSystemItem> stack = new Queue<IFileSystemItem>(itemsToPast);
+            while (stack.Any())
             {
-                if (itemToMove.IsDirectory)
-                    Directory.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
+                if (asyncResources.CancellationToken.IsCancellationRequested)
+                    return;
+
+                var fileSystemItem = stack.Dequeue();
+
+                var destinationPath = Path.Combine(CurrentDirectory, fileSystemItem.Path.Replace(root, ""));
+
+                if (destinationPath == fileSystemItem.Path)
+                {
+                    _logger.Info($"{destinationPath} file or directory exist in current directory");
+                    return;
+                }
+
+                if (fileSystemItem.IsDirectory)
+                {
+                    try
+                    {
+                        await Task.Run(() => Directory.CreateDirectory(destinationPath)).ConfigureAwait(false);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("Error during directory creation", exception);
+                        throw new DirectoryCreationException(destinationPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Given directory name: {destinationPath}, is invalid", exception);
+                        throw new InvalidPathException(destinationPath, innerException: exception);
+                    }
+                    if (inDepth)
+                    {
+                        foreach (var item in GetAllItemsUnderPath(fileSystemItem.Path))
+                            stack.Enqueue(item);
+                    }
+                }
                 else
-                    File.Move(itemToMove.Path, Path.Combine(destinationPath, itemToMove.Name));
-            }
-            catch (UnauthorizedAccessException unauthorizedAccessException)
-            {
-                _logger.Info($"Unauthorized access to {CurrentDirectory}", unauthorizedAccessException);
-            }
-            catch (DirectoryNotFoundException exception)
-            {
-                _logger.Error($"Given soruce path: {itemToMove.Path}, is invalid",
-                    exception);
-                throw new InvalidPathException(itemToMove.Path, innerException: exception);
-            }
-            catch (Exception exception)
-            {
-                _logger.Error("One of the given paths may be invalid, or file system item is used by another process", exception);
-                throw new MoveOperationException(itemToMove.Path, destinationPath, innerException: exception);
+                {
+                    try
+                    {
+                        await Task.Run(() => File.Copy(fileSystemItem.Path, destinationPath, canOverwrite)).ConfigureAwait(false);
+                    }
+                    catch (IOException exception)
+                    {
+                        _logger.Error("{}", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.Error($"Soruce path: {fileSystemItem.Path} or destination path: {destinationPath} is wrong", exception);
+                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
+                    }
+                }
+
+                asyncResources.Progress.Report(progress++);
             }
         }
 

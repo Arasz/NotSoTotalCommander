@@ -60,28 +60,16 @@ namespace NotSoTotalCommanderApp.Converters
 
                 routedEventArgs.Handled = true;
 
-                switch (operation)
-                {
-                    case "Copy":
-                        actionType = ActionType.Copy;
-                        break;
-
-                    case "Paste":
-                        actionType = ActionType.MoveOrPaste;
-                        break;
-
-                    case "Delete":
-                        actionType = ActionType.Delete;
-                        break;
-
-                    case "Create directory":
-                        actionType = ActionType.Create;
-                        break;
-
-                    case "Cut":
-                        actionType = ActionType.Cut;
-                        break;
-                }
+                if (operation == Properties.Resources.CopyMenuItem)
+                    actionType = ActionType.Copy;
+                else if (operation == Properties.Resources.PasteMenuItem)
+                    actionType = ActionType.MoveOrPaste;
+                else if (operation == Properties.Resources.DeleteMenuItem)
+                    actionType = ActionType.Delete;
+                else if (operation == Properties.Resources.CreateDirMenuItem)
+                    actionType = ActionType.Create;
+                else if (operation == Properties.Resources.CutMenuItem)
+                    actionType = ActionType.Cut;
             }
 
             return actionType;

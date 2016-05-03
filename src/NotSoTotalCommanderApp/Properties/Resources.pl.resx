@@ -193,4 +193,13 @@
   <data name="DepthPasteMessage" xml:space="preserve">
     <value>Czy chcesz skopiować wszystkie pliki i podfoldery?</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="OperationInProgress" xml:space="preserve">
+    <value>Trwa wykonywanie operacji...</value>
+  </data>
+  <data name="ProgressReportMessage" xml:space="preserve">
+    <value>zmodyfikowane pliki lub foldery: </value>
+  </data>
 </root>

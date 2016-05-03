@@ -106,6 +106,15 @@ namespace NotSoTotalCommanderApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Close {
@@ -259,6 +268,15 @@ namespace NotSoTotalCommanderApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation in progress....
+        /// </summary>
+        public static string OperationInProgress {
+            get {
+                return ResourceManager.GetString("OperationInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paste.
         /// </summary>
         public static string PasteMenuItem {
@@ -273,6 +291,15 @@ namespace NotSoTotalCommanderApp.Properties {
         public static string PolishMenuItem {
             get {
                 return ResourceManager.GetString("PolishMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to modified files or directories: .
+        /// </summary>
+        public static string ProgressReportMessage {
+            get {
+                return ResourceManager.GetString("ProgressReportMessage", resourceCulture);
             }
         }
         
