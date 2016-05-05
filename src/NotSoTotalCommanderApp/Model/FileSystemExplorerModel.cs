@@ -128,34 +128,6 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
-        public async Task DeleteAsync(AsyncOperationResources<int> asyncOperationResources)
-        {
-            int progress = SelectedItems.Count;
-
-            foreach (var fileSystemItem in SelectedItems)
-            {
-                if (asyncOperationResources.CancellationTokenSource.IsCancellationRequested)
-                    return;
-                try
-                {
-                    if (fileSystemItem.IsDirectory)
-                        await Task.Run(() => Directory.Delete(fileSystemItem.Path, true)).ConfigureAwait(false);
-                    else
-                        await Task.Run(() => File.Delete(fileSystemItem.Path)).ConfigureAwait(false);
-                    asyncOperationResources.Progress.Report(progress--);
-                }
-                catch (UnauthorizedAccessException unauthorizedAccessException)
-                {
-                    _logger.Info($"Unauthorized access to {fileSystemItem.Path}", unauthorizedAccessException);
-                }
-                catch (Exception exception)
-                {
-                    _logger.Error($"Exception thrown when during {fileSystemItem.Path} delete attempt", exception);
-                    throw new DeleteOperationException(fileSystemItem.Path, innerException: exception);
-                }
-            }
-        }
-
         /// <summary>
         /// Retrieves informations about all file system items under given <paramref name="path"/> 
         /// </summary>
@@ -174,27 +146,12 @@ namespace NotSoTotalCommanderApp.Model
             return fileSystemItems;
         }
 
-        /// <summary>
-        /// Calls move or past operation based on why items where cached 
-        /// </summary>
-        /// <param name="items"></param>
-        /// <param name="canOverwrite"></param>
-        /// <param name="inDepth"></param>
-        public void MoveOrPaste(IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false, bool inDepth = false)
-        {
-            if (_cacheToMove)
-                MoveCached(items);
-            else
-                Paste(items, canOverwrite, inDepth);
-        }
-
-        public async Task MoveOrPasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null, bool canOverwrite = false,
-                            bool inDepth = false)
+        public async Task MoveOrPasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null, bool inDepth = false)
         {
             if (_cacheToMove)
                 await MoveCachedAsync(asyncResources, items).ConfigureAwait(false);
             else
-                await PasteAsync(asyncResources, items, canOverwrite, inDepth).ConfigureAwait(false);
+                await PasteAsync(asyncResources, items, inDepth).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -229,24 +186,11 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
-        /// Moves cached items to destination folder 
+        /// Moves cached items to new location 
         /// </summary>
-        private void MoveCached(IEnumerable<IFileSystemItem> items = null)
-        {
-            var cachedItems = items ?? CachedItems;
-
-            if (cachedItems == null)
-            {
-                _logger.Info("Cut called but no items where cached");
-                return;
-            }
-
-            foreach (var fileSystemItem in CachedItems)
-                Move(fileSystemItem, CurrentDirectory);
-            // after move cached collection is not valid anymore
-            CachedItems = null;
-        }
-
+        /// <param name="asyncResources"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
         private async Task MoveCachedAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> items = null)
         {
             var cachedItems = items ?? CachedItems;
@@ -270,67 +214,13 @@ namespace NotSoTotalCommanderApp.Model
         }
 
         /// <summary>
-        /// Makes copy of cached items inside current directory 
+        /// Pasts cached items to new location 
         /// </summary>
+        /// <param name="asyncResources"></param>
         /// <param name="fileSystemItemsToPast"></param>
-        /// <exception cref="DirectoryCreationException"></exception>
-        /// <exception cref="InvalidPathException"></exception>
+        /// <param name="inDepth"></param>
         /// <returns></returns>
-        /// <exception cref="FileCopyException"> Condition. </exception>
-        private void Paste(IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
-        {
-            var itemsToPast = fileSystemItemsToPast ?? CachedItems;
-            string currentDirectoryTmp;
-
-            foreach (var fileSystemItem in itemsToPast)
-            {
-                if (fileSystemItem.IsDirectory)
-                {
-                    currentDirectoryTmp = CurrentDirectory;
-                    var newDirectoryPath = Path.Combine(CurrentDirectory, fileSystemItem.Name);
-                    try
-                    {
-                        Directory.CreateDirectory(newDirectoryPath);
-                    }
-                    catch (IOException exception)
-                    {
-                        _logger.Error("Error during directory creation", exception);
-                        throw new DirectoryCreationException(newDirectoryPath, innerException: exception);
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.Error($"Given directory name: {newDirectoryPath}, is invalid", exception);
-                        throw new InvalidPathException(newDirectoryPath, innerException: exception);
-                    }
-                    if (inDepth)
-                    {
-                        CurrentDirectory = newDirectoryPath;
-                        Paste(GetAllItemsUnderPath(fileSystemItem.Path), canOverwrite, inDepth);
-                    }
-                    CurrentDirectory = currentDirectoryTmp;
-                }
-                else
-                {
-                    var destinationPath = Path.Combine(CurrentDirectory, fileSystemItem.Name);
-                    try
-                    {
-                        File.Copy(fileSystemItem.Path, destinationPath, canOverwrite);
-                    }
-                    catch (IOException exception)
-                    {
-                        _logger.Error("{}", exception);
-                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.Error($"Soruce path: {fileSystemItem.Path} or destination path: {destinationPath} is wrong", exception);
-                        throw new FileCopyException(fileSystemItem.Path, destinationPath, innerException: exception);
-                    }
-                }
-            }
-        }
-
-        private async Task PasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool canOverwrite = false, bool inDepth = false)
+        private async Task PasteAsync(AsyncOperationResources<int> asyncResources, IEnumerable<IFileSystemItem> fileSystemItemsToPast = null, bool inDepth = false)
         {
             int progress = 1;
             var itemsToPast = fileSystemItemsToPast ?? CachedItems;
@@ -351,7 +241,7 @@ namespace NotSoTotalCommanderApp.Model
                 if (destinationPath == fileSystemItem.Path)
                 {
                     _logger.Info($"{destinationPath} file or directory exist in current directory");
-                    return;
+                    //return;
                 }
 
                 if (fileSystemItem.IsDirectory)
@@ -380,7 +270,7 @@ namespace NotSoTotalCommanderApp.Model
                 {
                     try
                     {
-                        await Task.Run(() => File.Copy(fileSystemItem.Path, destinationPath, canOverwrite)).ConfigureAwait(false);
+                        await Task.Run(() => File.Copy(fileSystemItem.Path, destinationPath, false)).ConfigureAwait(false);
                     }
                     catch (IOException exception)
                     {

@@ -39,7 +39,7 @@ namespace NotSoTotalCommanderApp.ViewModel
 
             SimpleIoc.Default.Register<FileSystemExplorerModel>();
             SimpleIoc.Default.Register<MainViewModel>();
-            SimpleIoc.Default.Register<FileSystemExplorerViewModel>();
+            SimpleIoc.Default.Register<FileSystemExplorerViewModel>(() => new FileSystemExplorerViewModel(SimpleIoc.Default.GetInstanceWithoutCaching<FileSystemExplorerModel>()));
         }
 
         public static void Cleanup()

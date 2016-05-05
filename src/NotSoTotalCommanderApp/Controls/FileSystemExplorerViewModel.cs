@@ -51,7 +51,7 @@ namespace NotSoTotalCommanderApp.Controls
         /// </summary>
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private IDialogService _dialogService = null;
+        private IDialogService _dialogService;
 
         /// <summary>
         /// Items reload (refresh) state 
@@ -209,9 +209,10 @@ namespace NotSoTotalCommanderApp.Controls
         /// Reloads file system after change 
         /// </summary>
         /// <param name="message"></param>
-        private void ReloadFileSystem(ReloadFileSystemMessage message = null)
+        private void ReloadFileSystem(ReloadFileSystemMessage message)
         {
-            LoadFileSystemItems(true);
+            if (message.CurrentDirectory == _explorerModel.CurrentDirectory)
+                LoadFileSystemItems(true);
         }
 
         private void ReportProgress(int progress)
@@ -260,7 +261,7 @@ namespace NotSoTotalCommanderApp.Controls
                             _messanger.Send(new AsyncOperationIndicatorMessage(true));
                         }
 
-                        _messanger.Send(new ReloadFileSystemMessage());
+                        _messanger.Send(new ReloadFileSystemMessage(_explorerModel.CurrentDirectory));
                         break;
 
                     case ActionType.Cut:
@@ -273,7 +274,7 @@ namespace NotSoTotalCommanderApp.Controls
                         if (deleteDecisionResult == MessageBoxResult.Yes)
                         {
                             _explorerModel.Delete();
-                            _messanger.Send(new ReloadFileSystemMessage());
+                            _messanger.Send(new ReloadFileSystemMessage(_explorerModel.CurrentDirectory));
                         }
                         break;
 
@@ -282,14 +283,15 @@ namespace NotSoTotalCommanderApp.Controls
                                 DecisionType.Create);
                         var newName = createdResponse.Data;
                         _explorerModel.CreateDirectory(newName);
-                        _messanger.Send(new ReloadFileSystemMessage());
+                        _messanger.Send(new ReloadFileSystemMessage(_explorerModel.CurrentDirectory));
                         break;
                 }
             }
             catch (FileSystemException exception)
             {
                 _logger.Info($"Exception catched inside {MethodBase.GetCurrentMethod().Name}.", exception);
-                DialogService.ShowError(exception.Message, Resources.Exception, MessageBoxButton.OK);
+                _messanger.Send(new AsyncOperationIndicatorMessage(true));
+                DialogService.ShowError(exception.ToString(), Resources.Exception, MessageBoxButton.OK);
             }
         }
     }
