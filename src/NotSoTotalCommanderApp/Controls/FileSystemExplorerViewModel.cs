@@ -107,6 +107,8 @@ namespace NotSoTotalCommanderApp.Controls
             SelectedItems = _explorerModel.SelectedItems;
             SelectedPath = SystemDrives.First();
 
+            LoadFileSystemItems();
+
             LoadFileSystemItemsCommand = new RelayCommand<bool>(LoadFileSystemItems);
             RespondForUserActionCommand = new RelayCommand<ActionType>(ResponseForUserActionAsync);
             SelectionChangedCommand = new RelayCommand<EventArgs>(HandleSelectionEvent);

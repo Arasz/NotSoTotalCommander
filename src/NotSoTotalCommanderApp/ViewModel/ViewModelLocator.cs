@@ -25,7 +25,8 @@ namespace NotSoTotalCommanderApp.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
-        public FileSystemExplorerViewModel FileSystemExplorer => ServiceLocator.Current.GetInstance<FileSystemExplorerViewModel>();
+        public FileSystemExplorerViewModel FileSystemExplorer
+            => SimpleIoc.Default.GetInstanceWithoutCaching<FileSystemExplorerViewModel>();
 
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
 
