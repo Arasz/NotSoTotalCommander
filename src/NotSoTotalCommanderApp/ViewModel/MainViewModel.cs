@@ -2,6 +2,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using log4net;
+using Microsoft.Practices.ServiceLocation;
 using NotSoTotalCommanderApp.Culture;
 using NotSoTotalCommanderApp.Enums;
 using NotSoTotalCommanderApp.Exceptions;
@@ -9,6 +10,7 @@ using NotSoTotalCommanderApp.Extensions;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using NotSoTotalCommanderApp.Services;
 using NotSoTotalCommanderApp.Utility;
 using System;
 using System.Collections.Generic;
@@ -69,9 +71,6 @@ namespace NotSoTotalCommanderApp.ViewModel
 
         public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
 
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class. 
-        /// </summary>
         public MainViewModel(FileSystemExplorerModel explorerModel)
         {
             _messanger = Messenger.Default;
@@ -178,8 +177,10 @@ namespace NotSoTotalCommanderApp.ViewModel
         {
             IProgress<int> progress = new Progress<int>(ReportProgress);
             _cancellationTokenSource = new CancellationTokenSource();
-            _cancellationToken = _cancellationTokenSource.Token;
-            AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(progress, ref _cancellationToken);
+            AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(progress, _cancellationTokenSource);
+
+            IDialogService dialogSrvice = ServiceLocator.Current.GetInstance<IDialogService>();
+            ;
 
             switch (action)
             {
@@ -193,22 +194,21 @@ namespace NotSoTotalCommanderApp.ViewModel
 
                 case ActionType.MoveOrPaste:
 
-                    if (_explorerModel.IsAnyDirectoryCached)
-                        UserDecisionRequest(DecisionType.DepthPaste);
-
                     MessageBoxResult pastDecisionResult = MessageBoxResult.None;
-                    if (_lastDecisionResultMessage?.UserDecisionResult.Any() ?? false)
-                        pastDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+
+                    if (_explorerModel.IsAnyDirectoryCached)
+                        pastDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNoCancel,
+                            DecisionType.DepthPaste).Result;
 
                     if (pastDecisionResult == MessageBoxResult.Yes)
                     {
-                        _messanger.Send(new AsyncOperationIndicatorMessage());
+                        dialogSrvice.ShowProgressMessage("", "");
                         await _explorerModel.MoveOrPasteAsync(asyncOperationResources, inDepth: true).ConfigureAwait(true);
                         _messanger.Send(new AsyncOperationIndicatorMessage(true));
                     }
                     else
                     {
-                        _messanger.Send(new AsyncOperationIndicatorMessage());
+                        dialogSrvice.ShowProgressMessage("", "");
                         await _explorerModel.MoveOrPasteAsync(asyncOperationResources).ConfigureAwait(true);
                         _messanger.Send(new AsyncOperationIndicatorMessage(true));
                     }
@@ -221,8 +221,8 @@ namespace NotSoTotalCommanderApp.ViewModel
                     break;
 
                 case ActionType.Delete:
-                    UserDecisionRequest(DecisionType.Delete);
-                    var deleteDecisionResult = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
+                    var deleteDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
+                            DecisionType.Delete).Result;
                     if (deleteDecisionResult == MessageBoxResult.Yes)
                     {
                         _explorerModel.Delete();
@@ -232,8 +232,9 @@ namespace NotSoTotalCommanderApp.ViewModel
 
                 case ActionType.Create:
                     UserDecisionRequest(DecisionType.Create);
-                    var cresteResponse = _lastDecisionResultMessage.UserDecisionResult.Dequeue();
-                    var newName = _lastDecisionResultMessage.Name;
+                    var cresteResponse = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
+                            DecisionType.Delete);
+                    var newName = cresteResponse.Data;
                     _explorerModel.CreateDirectory(newName);
                     LoadFileSystemItems(true);
                     break;

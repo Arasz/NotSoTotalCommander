@@ -12,16 +12,24 @@ namespace NotSoTotalCommanderApp.Model
 {
     public class FileSystemExplorerModel
     {
+        /// <summary>
+        /// Default logger 
+        /// </summary>
         private readonly ILog _logger;
 
+        /// <summary>
+        /// Specifies if cache should be moved (true) or copied 
+        /// </summary>
         private bool _cacheToMove;
 
-        private FileSystemWatcher _watcher = new FileSystemWatcher();
-
-        public IEnumerable<IFileSystemItem> CachedItems { get; private set; }
-
+        /// <summary>
+        /// Currently browsed directory 
+        /// </summary>
         public string CurrentDirectory { get; set; }
 
+        /// <summary>
+        /// Current directory parrent 
+        /// </summary>
         public string GetCurrentDirectoryParent
         {
             get
@@ -32,11 +40,25 @@ namespace NotSoTotalCommanderApp.Model
             }
         }
 
+        /// <summary>
+        /// Checks if there is directory inside cached file system items collection 
+        /// </summary>
         public bool IsAnyDirectoryCached => CachedItems?.Any((item => item.IsDirectory)) ?? false;
 
+        /// <summary>
+        /// Selected file system items 
+        /// </summary>
         public IList<IFileSystemItem> SelectedItems { get; } = new List<IFileSystemItem>();
 
+        /// <summary>
+        /// System drives 
+        /// </summary>
         public string[] SystemDrives => Directory.GetLogicalDrives();
+
+        /// <summary>
+        /// Cached file system items collection 
+        /// </summary>
+        private IEnumerable<IFileSystemItem> CachedItems { get; set; }
 
         public FileSystemExplorerModel()
         {
@@ -112,7 +134,7 @@ namespace NotSoTotalCommanderApp.Model
 
             foreach (var fileSystemItem in SelectedItems)
             {
-                if (asyncOperationResources.CancellationToken.IsCancellationRequested)
+                if (asyncOperationResources.CancellationTokenSource.IsCancellationRequested)
                     return;
                 try
                 {
@@ -238,7 +260,7 @@ namespace NotSoTotalCommanderApp.Model
             int progress = 1;
             foreach (var fileSystemItem in CachedItems)
             {
-                if (asyncResources.CancellationToken.IsCancellationRequested)
+                if (asyncResources.CancellationTokenSource.IsCancellationRequested)
                     return;
                 await Task.Run(() => Move(fileSystemItem, CurrentDirectory)).ConfigureAwait(false);
                 asyncResources.Progress.Report(progress++);
@@ -319,7 +341,7 @@ namespace NotSoTotalCommanderApp.Model
             Queue<IFileSystemItem> stack = new Queue<IFileSystemItem>(itemsToPast);
             while (stack.Any())
             {
-                if (asyncResources.CancellationToken.IsCancellationRequested)
+                if (asyncResources.CancellationTokenSource.IsCancellationRequested)
                     return;
 
                 var fileSystemItem = stack.Dequeue();

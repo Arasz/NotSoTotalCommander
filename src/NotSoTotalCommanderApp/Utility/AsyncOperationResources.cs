@@ -9,14 +9,14 @@ namespace NotSoTotalCommanderApp.Utility
     /// <typeparam name="T"></typeparam>
     public class AsyncOperationResources<T>
     {
-        public CancellationToken CancellationToken { get; }
+        public CancellationTokenSource CancellationTokenSource { get; }
 
         public IProgress<T> Progress { get; }
 
-        public AsyncOperationResources(IProgress<T> progress, ref CancellationToken cancellationToken)
+        public AsyncOperationResources(IProgress<T> progress, CancellationTokenSource cancellationTokenSource)
         {
             Progress = progress;
-            CancellationToken = cancellationToken;
+            CancellationTokenSource = cancellationTokenSource;
         }
     }
 }
