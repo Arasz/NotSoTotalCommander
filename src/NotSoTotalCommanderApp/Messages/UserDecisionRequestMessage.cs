@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using NotSoTotalCommanderApp.Services;
 
 namespace NotSoTotalCommanderApp.Messages
 {
@@ -10,13 +11,5 @@ namespace NotSoTotalCommanderApp.Messages
         {
             DecisionType = decisionType;
         }
-    }
-
-    internal enum DecisionType
-    {
-        DepthPaste,
-        Override,
-        Delete,
-        Create,
     }
 }

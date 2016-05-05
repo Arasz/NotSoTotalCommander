@@ -86,6 +86,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\FileSystemExplorer.xaml.cs">
+      <DependentUpon>FileSystemExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FileSystemExplorerViewModel.cs" />
     <Compile Include="Converters\EventArgsToActionTypeConverter.cs" />
     <Compile Include="Converters\EventArgsToCultureInfoConverter.cs" />
     <Compile Include="Converters\FileSystemInfoToPathConverter.cs" />
@@ -119,6 +123,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.pl.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DecisionResult.cs" />
+    <Compile Include="Services\DecisionType.cs" />
+    <Compile Include="Services\IDialogService.cs" />
     <Compile Include="Utility\AsyncOperationResources.cs" />
     <Compile Include="Utility\GridViewSort.cs" />
     <Compile Include="Model\FileSystemItemModel\FileSystemItem.cs" />
@@ -129,6 +136,10 @@
     <Compile Include="View\ProgressReportWindow.xaml.cs">
       <DependentUpon>ProgressReportWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\FileSystemExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

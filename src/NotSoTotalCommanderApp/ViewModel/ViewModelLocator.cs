@@ -14,6 +14,7 @@
 
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using NotSoTotalCommanderApp.Controls;
 using NotSoTotalCommanderApp.Model;
 
 namespace NotSoTotalCommanderApp.ViewModel
@@ -24,6 +25,8 @@ namespace NotSoTotalCommanderApp.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
+        public FileSystemExplorerViewModel FileSystemExplorer => ServiceLocator.Current.GetInstance<FileSystemExplorerViewModel>();
+
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace NotSoTotalCommanderApp.ViewModel
 
             SimpleIoc.Default.Register<FileSystemExplorerModel>();
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<FileSystemExplorerViewModel>();
         }
 
         public static void Cleanup()
