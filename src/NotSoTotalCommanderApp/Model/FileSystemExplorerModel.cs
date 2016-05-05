@@ -13,14 +13,14 @@ namespace NotSoTotalCommanderApp.Model
     public class FileSystemExplorerModel
     {
         /// <summary>
+        /// Specifies if cache should be moved (true) or copied 
+        /// </summary>
+        private static bool _cacheToMove;
+
+        /// <summary>
         /// Default logger 
         /// </summary>
         private readonly ILog _logger;
-
-        /// <summary>
-        /// Specifies if cache should be moved (true) or copied 
-        /// </summary>
-        private bool _cacheToMove;
 
         /// <summary>
         /// Currently browsed directory 
@@ -58,7 +58,7 @@ namespace NotSoTotalCommanderApp.Model
         /// <summary>
         /// Cached file system items collection 
         /// </summary>
-        private IEnumerable<IFileSystemItem> CachedItems { get; set; }
+        private static IEnumerable<IFileSystemItem> CachedItems { get; set; }
 
         public FileSystemExplorerModel()
         {
@@ -246,6 +246,11 @@ namespace NotSoTotalCommanderApp.Model
 
                 if (fileSystemItem.IsDirectory)
                 {
+                    if (inDepth)
+                    {
+                        foreach (var item in GetAllItemsUnderPath(fileSystemItem.Path))
+                            stack.Enqueue(item);
+                    }
                     try
                     {
                         await Task.Run(() => Directory.CreateDirectory(destinationPath)).ConfigureAwait(false);
@@ -259,11 +264,6 @@ namespace NotSoTotalCommanderApp.Model
                     {
                         _logger.Error($"Given directory name: {destinationPath}, is invalid", exception);
                         throw new InvalidPathException(destinationPath, innerException: exception);
-                    }
-                    if (inDepth)
-                    {
-                        foreach (var item in GetAllItemsUnderPath(fileSystemItem.Path))
-                            stack.Enqueue(item);
                     }
                 }
                 else
