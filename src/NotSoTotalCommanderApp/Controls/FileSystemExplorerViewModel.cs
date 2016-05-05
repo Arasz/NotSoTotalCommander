@@ -102,6 +102,7 @@ namespace NotSoTotalCommanderApp.Controls
         {
             _messanger = Messenger.Default;
             _messanger.Register<CancelAsyncOperationMessage>(this, CancellationRequestedHandler);
+            _messanger.Register<ReloadFileSystemMessage>(this, ReloadFileSystem);
 
             _explorerModel = explorerModel;
             SelectedItems = _explorerModel.SelectedItems;
@@ -186,6 +187,15 @@ namespace NotSoTotalCommanderApp.Controls
             }
         }
 
+        /// <summary>
+        /// Reloads file system after change 
+        /// </summary>
+        /// <param name="message"></param>
+        private void ReloadFileSystem(ReloadFileSystemMessage message = null)
+        {
+            LoadFileSystemItems(true);
+        }
+
         private void ReportProgress(int progress)
         {
             _messanger.Send(new ReportProgressMessage<int>(progress));
@@ -231,7 +241,7 @@ namespace NotSoTotalCommanderApp.Controls
                         _messanger.Send(new AsyncOperationIndicatorMessage(true));
                     }
 
-                    LoadFileSystemItems(true);
+                    _messanger.Send(new ReloadFileSystemMessage());
                     break;
 
                 case ActionType.Cut:
@@ -244,16 +254,16 @@ namespace NotSoTotalCommanderApp.Controls
                     if (deleteDecisionResult == MessageBoxResult.Yes)
                     {
                         _explorerModel.Delete();
-                        LoadFileSystemItems(true);
+                        _messanger.Send(new ReloadFileSystemMessage());
                     }
                     break;
 
                 case ActionType.Create:
                     var cresteResponse = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
-                            DecisionType.Delete);
+                            DecisionType.Create);
                     var newName = cresteResponse.Data;
                     _explorerModel.CreateDirectory(newName);
-                    LoadFileSystemItems(true);
+                    _messanger.Send(new ReloadFileSystemMessage());
                     break;
             }
         }
