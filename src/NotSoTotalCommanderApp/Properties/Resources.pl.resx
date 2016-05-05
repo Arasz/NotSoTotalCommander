@@ -202,4 +202,10 @@
   <data name="ProgressReportMessage" xml:space="preserve">
     <value>zmodyfikowane pliki lub foldery: </value>
   </data>
+  <data name="Exception" xml:space="preserve">
+    <value>Błąd aplikacji</value>
+  </data>
+  <data name="UnauthorizedAccesMessage" xml:space="preserve">
+    <value>Nie masz dostępu do pliku lub katalogu</value>
+  </data>
 </root>

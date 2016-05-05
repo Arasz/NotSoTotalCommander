@@ -19,7 +19,7 @@ namespace NotSoTotalCommanderApp.Services
         /// <param name="errorMessage"></param>
         /// <param name="errorTitle"></param>
         /// <param name="messageButton"></param>
-        void ShowError(string errorMessage, string errorTitle, Button messageButton);
+        void ShowError(string errorMessage, string errorTitle, Button messageButton = Button.OK);
 
         /// <summary>
         /// Shows information message to user 

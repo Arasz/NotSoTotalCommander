@@ -196,6 +196,15 @@ namespace NotSoTotalCommanderApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application error.
+        /// </summary>
+        public static string Exception {
+            get {
+                return ResourceManager.GetString("Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exit.
         /// </summary>
         public static string ExitMenuItem {
@@ -309,6 +318,15 @@ namespace NotSoTotalCommanderApp.Properties {
         public static string SizeColumnHeader {
             get {
                 return ResourceManager.GetString("SizeColumnHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have acces to this file or directory.
+        /// </summary>
+        public static string UnauthorizedAccesMessage {
+            get {
+                return ResourceManager.GetString("UnauthorizedAccesMessage", resourceCulture);
             }
         }
     }

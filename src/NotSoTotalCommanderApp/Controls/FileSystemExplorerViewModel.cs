@@ -1,14 +1,15 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using log4net;
-using Microsoft.Practices.ServiceLocation;
 using NotSoTotalCommanderApp.Enums;
 using NotSoTotalCommanderApp.Exceptions;
 using NotSoTotalCommanderApp.Extensions;
 using NotSoTotalCommanderApp.Messages;
 using NotSoTotalCommanderApp.Model;
 using NotSoTotalCommanderApp.Model.FileSystemItemModel;
+using NotSoTotalCommanderApp.Properties;
 using NotSoTotalCommanderApp.Services;
 using NotSoTotalCommanderApp.Utility;
 using NotSoTotalCommanderApp.ViewModel;
@@ -49,6 +50,8 @@ namespace NotSoTotalCommanderApp.Controls
         /// Cancellation token source for asynchronous operations 
         /// </summary>
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private IDialogService _dialogService = null;
 
         /// <summary>
         /// Items reload (refresh) state 
@@ -94,6 +97,19 @@ namespace NotSoTotalCommanderApp.Controls
         /// System drivers 
         /// </summary>
         public IEnumerable<string> SystemDrives => _explorerModel.SystemDrives;
+
+        /// <summary>
+        /// Gets dialog service from IOC 
+        /// </summary>
+        private IDialogService DialogService
+        {
+            get
+            {
+                if (_dialogService == null)
+                    _dialogService = SimpleIoc.Default.GetInstance<IDialogService>();
+                return _dialogService;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class. 
@@ -180,10 +196,12 @@ namespace NotSoTotalCommanderApp.Controls
             }
             catch (UnauthorizedAccessException exception)
             {
+                DialogService.ShowError(Resources.UnauthorizedAccesMessage, Resources.Exception, MessageBoxButton.OK);
             }
             catch (FileSystemException exception)
             {
-                _logger.Info($"Exception catched inside {MethodInfo.GetCurrentMethod().Name}.", exception);
+                _logger.Info($"Exception catched inside {MethodBase.GetCurrentMethod().Name}.", exception);
+                DialogService.ShowError(exception.Message, Resources.Exception, MessageBoxButton.OK);
             }
         }
 
@@ -203,68 +221,75 @@ namespace NotSoTotalCommanderApp.Controls
 
         private async void ResponseForUserActionAsync(ActionType action)
         {
-            IProgress<int> progress = new Progress<int>(ReportProgress);
             _cancellationTokenSource = new CancellationTokenSource();
-            AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(progress, _cancellationTokenSource);
+            AsyncOperationResources<int> asyncOperationResources = new AsyncOperationResources<int>(new Progress<int>(ReportProgress), _cancellationTokenSource);
 
-            IDialogService dialogSrvice = ServiceLocator.Current.GetInstance<IDialogService>();
+            IDialogService dialogSrvice = DialogService;
             ;
 
-            switch (action)
+            try
             {
-                case ActionType.OpenFileSystemItem:
-                    LoadFileSystemItems();
-                    break;
+                switch (action)
+                {
+                    case ActionType.OpenFileSystemItem:
+                        LoadFileSystemItems();
+                        break;
 
-                case ActionType.Copy:
-                    _explorerModel.CacheSelectedItems(SelectedItems);
-                    break;
+                    case ActionType.Copy:
+                        _explorerModel.CacheSelectedItems(SelectedItems);
+                        break;
 
-                case ActionType.MoveOrPaste:
+                    case ActionType.MoveOrPaste:
 
-                    MessageBoxResult pastDecisionResult = MessageBoxResult.None;
+                        MessageBoxResult pastDecisionResult = MessageBoxResult.None;
 
-                    if (_explorerModel.IsAnyDirectoryCached)
-                        pastDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNoCancel,
-                            DecisionType.DepthPaste).Result;
+                        if (_explorerModel.IsAnyDirectoryCached)
+                            pastDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNoCancel,
+                                DecisionType.DepthPaste).Result;
 
-                    if (pastDecisionResult == MessageBoxResult.Yes)
-                    {
-                        dialogSrvice.ShowProgressMessage("", "");
-                        await _explorerModel.MoveOrPasteAsync(asyncOperationResources, inDepth: true).ConfigureAwait(true);
-                        _messanger.Send(new AsyncOperationIndicatorMessage(true));
-                    }
-                    else
-                    {
-                        dialogSrvice.ShowProgressMessage("", "");
-                        await _explorerModel.MoveOrPasteAsync(asyncOperationResources).ConfigureAwait(true);
-                        _messanger.Send(new AsyncOperationIndicatorMessage(true));
-                    }
+                        if (pastDecisionResult == MessageBoxResult.Yes)
+                        {
+                            dialogSrvice.ShowProgressMessage("", "");
+                            await _explorerModel.MoveOrPasteAsync(asyncOperationResources, inDepth: true).ConfigureAwait(true);
+                            _messanger.Send(new AsyncOperationIndicatorMessage(true));
+                        }
+                        else
+                        {
+                            dialogSrvice.ShowProgressMessage("", "");
+                            await _explorerModel.MoveOrPasteAsync(asyncOperationResources).ConfigureAwait(true);
+                            _messanger.Send(new AsyncOperationIndicatorMessage(true));
+                        }
 
-                    _messanger.Send(new ReloadFileSystemMessage());
-                    break;
-
-                case ActionType.Cut:
-                    _explorerModel.CacheSelectedItems(SelectedItems, true);
-                    break;
-
-                case ActionType.Delete:
-                    var deleteDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
-                            DecisionType.Delete).Result;
-                    if (deleteDecisionResult == MessageBoxResult.Yes)
-                    {
-                        _explorerModel.Delete();
                         _messanger.Send(new ReloadFileSystemMessage());
-                    }
-                    break;
+                        break;
 
-                case ActionType.Create:
-                    var cresteResponse = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
-                            DecisionType.Create);
-                    var newName = cresteResponse.Data;
-                    _explorerModel.CreateDirectory(newName);
-                    _messanger.Send(new ReloadFileSystemMessage());
-                    break;
+                    case ActionType.Cut:
+                        _explorerModel.CacheSelectedItems(SelectedItems, true);
+                        break;
+
+                    case ActionType.Delete:
+                        var deleteDecisionResult = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
+                                DecisionType.Delete).Result;
+                        if (deleteDecisionResult == MessageBoxResult.Yes)
+                        {
+                            _explorerModel.Delete();
+                            _messanger.Send(new ReloadFileSystemMessage());
+                        }
+                        break;
+
+                    case ActionType.Create:
+                        var createdResponse = dialogSrvice.ShowDecisionMessage("", "", MessageBoxButton.YesNo,
+                                DecisionType.Create);
+                        var newName = createdResponse.Data;
+                        _explorerModel.CreateDirectory(newName);
+                        _messanger.Send(new ReloadFileSystemMessage());
+                        break;
+                }
+            }
+            catch (FileSystemException exception)
+            {
+                _logger.Info($"Exception catched inside {MethodBase.GetCurrentMethod().Name}.", exception);
+                DialogService.ShowError(exception.Message, Resources.Exception, MessageBoxButton.OK);
             }
         }
     }

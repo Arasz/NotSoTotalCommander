@@ -65,9 +65,9 @@ namespace NotSoTotalCommanderApp
             return result;
         }
 
-        public void ShowError(string errorMessage, string errorTitle, MessageBoxButton messageButton)
+        public void ShowError(string errorMessage, string errorTitle, MessageBoxButton messageButton = MessageBoxButton.OK)
         {
-            throw new NotImplementedException();
+            MessageBox.Show(errorMessage, errorTitle, messageButton, MessageBoxImage.Error);
         }
 
         public void ShowMessage(string message, string title, MessageBoxButton messageButton)
